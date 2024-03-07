@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { Todo } from "../types";
 
 const getInitialTodo = () => {
   // getting todo list
@@ -7,7 +8,7 @@ const getInitialTodo = () => {
   if (localTodoList) {
     return JSON.parse(localTodoList);
   }
-  window.localStorage.setItem("todoList", []);
+  window.localStorage.setItem("todoList", '');
   return [];
 };
 
@@ -44,7 +45,7 @@ export const todoSlice = createSlice({
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo) => {
+        todoListArr.forEach((todo: Todo) => {
           if (todo.id === action.payload.id) {
             todo.status = action.payload.status;
             todo.title = action.payload.title;
@@ -58,7 +59,7 @@ export const todoSlice = createSlice({
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo, index) => {
+        todoListArr.forEach((todo:Todo, index: number) => {
           if (todo.id === action.payload) {
             todoListArr.splice(index, 1);
           }
