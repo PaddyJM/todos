@@ -30,7 +30,7 @@ const dropIn = {
   },
 };
 
-function TodoModal({ type, modalOpen, setModalOpen, todo }) {
+function TodoModal({ type, modalOpen, setModalOpen, todo }: { type: string, modalOpen: boolean, setModalOpen: (value: boolean) => void, todo: any }) {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("incomplete");
@@ -45,7 +45,7 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
     }
   }, [type, todo, modalOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (title === "") {
       toast.error("Please enter a title");
@@ -134,7 +134,7 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }) {
                 <Button type="submit" variant="primary">
                   {type === "add" ? "Add Task" : "Update Task"}
                 </Button>
-                <Button variant="secondary" onClick={() => setModalOpen(false)}>
+                <Button type='' variant="secondary" onClick={() => setModalOpen(false)}>
                   Cancel
                 </Button>
               </div>
