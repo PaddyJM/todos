@@ -7,7 +7,7 @@ const buttonTypes = {
   secondary: "secondary",
 };
 
-function Button({ type, variant = "primary", children, ...rest }) {
+function Button({ type, variant = "primary", children, ...rest }: { type: "submit" | "button", variant?: "primary" | "secondary", children: React.ReactNode, onClick?: () => void}) {
   return (
     <button
       type={type === "submit" ? "submit" : "button"}
@@ -22,7 +22,7 @@ function Button({ type, variant = "primary", children, ...rest }) {
   );
 }
 
-function SelectButton({ children, id, ...rest }) {
+function SelectButton({ children, id, ...rest }: { children: React.ReactNode, id: string }) {
   return (
     <select
       id={id}

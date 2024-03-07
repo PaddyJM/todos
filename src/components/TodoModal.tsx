@@ -134,7 +134,7 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }: { type: string, moda
                 <Button type="submit" variant="primary">
                   {type === "add" ? "Add Task" : "Update Task"}
                 </Button>
-                <Button type='' variant="secondary" onClick={() => setModalOpen(false)}>
+                <Button type='button' variant="secondary" onClick={() => setModalOpen(false)}>
                   Cancel
                 </Button>
               </div>
