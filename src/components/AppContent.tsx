@@ -1,8 +1,23 @@
 import { AnimatePresence, motion } from "framer-motion";
-import React from "react";
 import { useSelector } from "react-redux";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
+
+interface RootState {
+  todo: TodoState;
+}
+
+interface TodoState {
+  todoList: Todo[];
+  filterStatus: string;
+}
+
+interface Todo {
+  id: string;
+  title: string;
+  status: string;
+  time: string;
+}
 
 const container = {
   hidden: { opacity: 1 },
@@ -23,11 +38,11 @@ const child = {
 };
 
 function AppContent() {
-  const todoList = useSelector((state) => state.todo.todoList);
-  const filterStatus = useSelector((state) => state.todo.filterStatus);
+  const todoList = useSelector((state: RootState) => state.todo.todoList);
+  const filterStatus = useSelector((state: RootState) => state.todo.filterStatus);
 
   const sortedTodoList = [...todoList];
-  sortedTodoList.sort((a, b) => new Date(b.time) - new Date(a.time));
+  sortedTodoList.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
 
   const filteredTodoList = sortedTodoList.filter((item) => {
     if (filterStatus === "all") {
