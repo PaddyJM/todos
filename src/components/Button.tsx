@@ -22,7 +22,7 @@ function Button({ type, variant = "primary", children, ...rest }: { type: "submi
   );
 }
 
-function SelectButton({ children, id, ...rest }: { children: React.ReactNode, id: string }) {
+function SelectButton({ children, id, ...rest }: { children: React.ReactNode, id: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, value: string}) {
   return (
     <select
       id={id}

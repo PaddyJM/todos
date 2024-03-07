@@ -8,6 +8,7 @@ import { format } from "date-fns";
 import { addTodo, updateTodo } from "../slices/todoSlice";
 import styles from "../styles/modules/modal.module.scss";
 import Button from "./Button";
+import { Todo } from "../types";
 
 const dropIn = {
   hidden: {
@@ -30,7 +31,7 @@ const dropIn = {
   },
 };
 
-function TodoModal({ type, modalOpen, setModalOpen, todo }: { type: string, modalOpen: boolean, setModalOpen: (value: boolean) => void, todo: any }) {
+function TodoModal({ type, modalOpen, setModalOpen, todo }: { type: string, modalOpen: boolean, setModalOpen: (value: boolean) => void, todo?: Todo }) {
   const dispatch = useDispatch();
   const [title, setTitle] = useState("");
   const [status, setStatus] = useState("incomplete");
@@ -64,7 +65,7 @@ function TodoModal({ type, modalOpen, setModalOpen, todo }: { type: string, moda
         toast.success("Task added successfully");
       }
       if (type === "update") {
-        if (todo.title !== title || todo.status !== status) {
+        if (todo && (todo.title !== title || todo.status !== status)) {
           dispatch(updateTodo({ ...todo, title, status }));
           toast.success("Task Updated successfully");
         } else {
