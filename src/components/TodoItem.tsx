@@ -9,6 +9,7 @@ import styles from "../styles/modules/todoItem.module.scss";
 import { getClasses } from "../utils/getClasses";
 import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
+import { Todo } from "../types";
 
 const child = {
   hidden: { y: 20, opacity: 0 },
@@ -18,7 +19,7 @@ const child = {
   },
 };
 
-function TodoItem({ todo }) {
+function TodoItem({ todo }: {todo: Todo}) {
   const dispatch = useDispatch();
   const [checked, setChecked] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);

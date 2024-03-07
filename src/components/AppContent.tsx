@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useSelector } from "react-redux";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
+import { Todo } from "../types";
 
 interface RootState {
   todo: TodoState;
@@ -10,13 +11,6 @@ interface RootState {
 interface TodoState {
   todoList: Todo[];
   filterStatus: string;
-}
-
-interface Todo {
-  id: string;
-  title: string;
-  status: string;
-  time: string;
 }
 
 const container = {
