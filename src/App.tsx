@@ -1,28 +1,32 @@
-import React from "react";
 import { Toaster } from "react-hot-toast";
-import AppContent from "./components/AppContent";
-import AppHeader from "./components/AppHeader";
 import PageTitle from "./components/PageTitle";
 import styles from "./styles/modules/app.module.scss";
+import { Auth0Provider } from "@auth0/auth0-react";
+import AppContainer from "./components/AppContainer";
 
 function App() {
   return (
     <>
-      <div className="container">
-        <PageTitle>TODO List</PageTitle>
-        <div className={styles.app__wrapper}>
-          <AppHeader />
-          <AppContent />
+      <Auth0Provider
+        domain={"dev-5akspl1d.us.auth0.com"}
+        clientId={"iqeWLt3k2bDiSNaYQYlOYL96mHocj97f"}
+        authorizationParams={{ redirect_uri: window.location.origin }}
+      >
+        <div className="container">
+          <PageTitle>TODO List</PageTitle>
+          <div className={styles.app__wrapper}>
+            <AppContainer />
+          </div>
         </div>
-      </div>
-      <Toaster
-        position="bottom-right"
-        toastOptions={{
-          style: {
-            fontSize: "1.4rem",
-          },
-        }}
-      />
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              fontSize: "1.4rem",
+            },
+          }}
+        />
+      </Auth0Provider>
     </>
   );
 }

@@ -5,6 +5,7 @@ import styles from "../styles/modules/app.module.scss";
 import TodoModal from "./TodoModal";
 import { updateFilterStatus } from "../slices/todoSlice";
 import { RootTodoState } from "../types";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function AppHeader() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -16,6 +17,8 @@ function AppHeader() {
     setFilterStatus(e.target.value);
     dispatch(updateFilterStatus(e.target.value));
   };
+
+  const {logout} = useAuth0();
 
   return (
     <div className={styles.appHeader}>
@@ -31,6 +34,7 @@ function AppHeader() {
         <option value="incomplete">Incomplete</option>
         <option value="complete">Completed</option>
       </SelectButton>
+      <Button type="button" variant="primary" onClick={() => logout()}>Log out</Button>
       <TodoModal type="add" modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </div>
   );
