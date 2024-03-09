@@ -24,7 +24,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "deploy": "npm run build && cd ./infrastructure && npx cdk deploy"
+    "deploy": "npm run build && cd ./infrastructure && npx cdk deploy",
+    "deploy:db:dev": "cd infrastructure/ && docker compose up -d && scripts/create-table.sh"
   },
   "eslintConfig": {
     "extends": [
