@@ -1,5 +1,7 @@
 import * as cdk from "aws-cdk-lib";
+import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
+import path = require("path");
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 const env = process.env.ENV || "dev";
@@ -38,5 +40,25 @@ export class InfrastructureStack extends cdk.Stack {
       tableName: `TodosTable-${env}`,
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
+
+    const dynamoDbEndpoint = env === "dev" ? "http://localhost:8000" : '';
+
+    const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
+      runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
+      entry: path.join(__dirname, './lambda/saveTodosHandler.ts'),
+      environment: {
+        TODOS_TABLE: table.tableName,
+        DYNAMO_DB_ENDPOINT: dynamoDbEndpoint,
+      },
+    });
+
+    const api = new cdk.aws_apigateway.LambdaRestApi(this, `TodosApi-${env}`, {
+      handler: lambda,
+      proxy: false,
+    });
+
+    table.grantReadWriteData(lambda);
+
+    api.root.addResource("todos").addMethod("GET");
   }
 }
