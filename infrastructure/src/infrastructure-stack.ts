@@ -1,22 +1,42 @@
-import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
+import * as cdk from "aws-cdk-lib";
+import { Construct } from "constructs";
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
+
+const env = process.env.ENV || "dev";
 
 export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const bucket = new cdk.aws_s3.Bucket(this, 'TodosBucket', {
+    const bucket = new cdk.aws_s3.Bucket(this, "TodosBucket", {
       publicReadAccess: true,
-      websiteIndexDocument: 'index.html',
+      websiteIndexDocument: "index.html",
       blockPublicAccess: cdk.aws_s3.BlockPublicAccess.BLOCK_ACLS,
       accessControl: cdk.aws_s3.BucketAccessControl.BUCKET_OWNER_FULL_CONTROL,
-      bucketName: 'todos.patrickmorton.co.uk'
+      bucketName: "todos.patrickmorton.co.uk",
     });
 
-    new cdk.aws_s3_deployment.BucketDeployment(this, 'TodosWebsite', {
-      sources: [cdk.aws_s3_deployment.Source.asset('../build')],
-      destinationBucket: bucket
+    new cdk.aws_s3_deployment.BucketDeployment(this, "TodosWebsite", {
+      sources: [cdk.aws_s3_deployment.Source.asset("../build")],
+      destinationBucket: bucket,
+    });
+
+    /**
+     * Comment this out if creating a new table
+     */
+    // const table = cdk.aws_dynamodb.Table.fromTableArn(
+    //   this,
+    //   `TodosTable-${env}`,
+    //   `arn:aws:dynamodb:eu-west-2:011624951925:table/TodoTable-${env}`
+    // );
+
+    /**
+     * Uncomment this to create new table if necessary
+     */
+    const table = new cdk.aws_dynamodb.Table(this, `TodosTable-${env}`, {
+      partitionKey: { name: "id", type: cdk.aws_dynamodb.AttributeType.STRING },
+      tableName: `TodosTable-${env}`,
+      removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
   }
 }
