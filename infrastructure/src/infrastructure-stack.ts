@@ -41,14 +41,11 @@ export class InfrastructureStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    const dynamoDbEndpoint = env === "dev" ? "http://localhost:8000" : '';
-
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, './lambda/saveTodosHandler.ts'),
       environment: {
         TODOS_TABLE: table.tableName,
-        DYNAMO_DB_ENDPOINT: dynamoDbEndpoint,
       },
     });
 
@@ -59,6 +56,6 @@ export class InfrastructureStack extends cdk.Stack {
 
     table.grantReadWriteData(lambda);
 
-    api.root.addResource("todos").addMethod("GET");
+    api.root.addResource("todos").addMethod("PUT");
   }
 }

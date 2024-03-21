@@ -26,7 +26,7 @@
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "deploy:prod": "npm run build && cd ./infrastructure && ENV=prod npx cdk deploy",
     "deploy:db:dev": "cd infrastructure/ && docker compose up -d && scripts/create-table.sh",
-    "deploy:api:dev": "npm run deploy:db:dev && cd infrastructure/ && ENV=dev npx cdk synth && sam local start-api -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER && cd ../"
+    "deploy:api:dev": "npm run deploy:db:dev && cd infrastructure/ && ENV=dev npx cdk synth && sam local start-api -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image && cd ../"
   },
   "eslintConfig": {
     "extends": [
