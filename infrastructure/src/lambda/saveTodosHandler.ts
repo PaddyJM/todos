@@ -1,5 +1,6 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as dynamoose from "dynamoose";
+import { z } from "zod";
 
 export const handler = async (
   event: APIGatewayProxyEvent
@@ -32,7 +33,7 @@ export const handler = async (
           {
             type: Object,
             schema: {
-              id: String,
+              id: Number,
               title: String,
               status: Boolean,
             },
@@ -67,6 +68,19 @@ export const handler = async (
     }
   );
 
+  const validationSchema = z.object({
+    id: z.string(),
+    todos: z.array(
+      z.object({
+        id: z.number(),
+        title: z.string(),
+        status: z.boolean(),
+      })
+    ),
+  });
+
+  const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
+
   let result;
   try {
     const Todos = dynamoose.model("Todos", schema, {
@@ -75,8 +89,8 @@ export const handler = async (
     });
 
     const todos = new Todos({
-      id: "user1",
-      todos: [{ id: "1", title: "Do something", status: false }],
+      id: parsedBody.id,
+      todos: parsedBody.todos,
     });
 
     result = await todos.save();
