@@ -6,56 +6,77 @@ export const handler = async (
 ): Promise<APIGatewayProxyResult> => {
   const env = process.env.ENV || "dev";
 
+  let ddb;
   if (env === "dev") {
-    const ddb = new dynamoose.aws.ddb.DynamoDB({
+    ddb = new dynamoose.aws.ddb.DynamoDB({
       region: "localhost",
       endpoint: "http://dynamodb-local:8000",
     });
-
-    dynamoose.aws.ddb.set(ddb);
+  } else if (env === "test") {
+    ddb = new dynamoose.aws.ddb.DynamoDB({
+      region: "localhost",
+      endpoint: "http://localhost:8000",
+    });
+  } else {
+    ddb = new dynamoose.aws.ddb.DynamoDB();
   }
 
-  let result;
-  try {
-    const schema = new dynamoose.Schema(
-      {
-        id: String,
-        todos: Array,
-        updated_at: String,
-      },
-      {
-        timestamps: {
-          createdAt: {
-            created_at: {
-              type: {
-                value: Date,
-                settings: {
-                  storage: "iso",
-                },
-              },
+  dynamoose.aws.ddb.set(ddb);
+
+  const schema = new dynamoose.Schema(
+    {
+      id: String,
+      todos: {
+        type: Array,
+        schema: [
+          {
+            type: Object,
+            schema: {
+              id: String,
+              title: String,
+              status: Boolean,
             },
           },
-          updatedAt: {
-            updated: {
-              type: {
-                value: Date,
-                settings: {
-                  storage: "iso",
-                },
+        ],
+      },
+      updated_at: String,
+    },
+    {
+      timestamps: {
+        createdAt: {
+          created_at: {
+            type: {
+              value: Date,
+              settings: {
+                storage: "iso",
               },
             },
           },
         },
-      }
-    );
+        updatedAt: {
+          updated: {
+            type: {
+              value: Date,
+              settings: {
+                storage: "iso",
+              },
+            },
+          },
+        },
+      },
+    }
+  );
 
+  let result;
+  try {
     const Todos = dynamoose.model("Todos", schema, {
       tableName: `TodosTable-${env}`,
+      create: false,
     });
 
     const todos = new Todos({
       id: "user1",
-      todos: [{ id: "1", text: "Do something" }],
+      todos: [{ id: "1", title: "Do something", status: false }],
     });
 
     result = await todos.save();
