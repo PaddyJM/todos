@@ -71,7 +71,7 @@ export const handler = async (
   try {
     const Todos = dynamoose.model("Todos", schema, {
       tableName: `TodosTable-${env}`,
-      create: false,
+      create: env === "test" ? true : false,
     });
 
     const todos = new Todos({
