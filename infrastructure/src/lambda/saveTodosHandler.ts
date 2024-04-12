@@ -36,6 +36,7 @@ export const handler = async (
               id: Number,
               title: String,
               status: Boolean,
+              time: String,
             },
           },
         ],
@@ -75,6 +76,7 @@ export const handler = async (
         id: z.number(),
         title: z.string(),
         status: z.boolean(),
+        time: z.string(),
       })
     ),
   });
