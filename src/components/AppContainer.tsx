@@ -4,8 +4,7 @@ import AppHeader from "./AppHeader";
 import Button from "./Button";
 
 function AppContainer() {
-      const { isLoading, isAuthenticated, error, loginWithRedirect } =
-    useAuth0();
+  const { isLoading, isAuthenticated, error, loginWithRedirect } = useAuth0();
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -14,7 +13,7 @@ function AppContainer() {
     return <div>Oops... {error.message}</div>;
   }
 
-  if(isAuthenticated) {
+  if (isAuthenticated) {
     return (
       <>
         <AppHeader />
@@ -24,7 +23,13 @@ function AppContainer() {
   }
   return (
     <div>
-      <Button type="button" variant="primary" onClick={() => loginWithRedirect ()}>Log in</Button>
+      <Button
+        type="button"
+        variant="primary"
+        onClick={() => loginWithRedirect()}
+      >
+        Log in
+      </Button>
     </div>
   );
 }
