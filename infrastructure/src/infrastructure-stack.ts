@@ -57,10 +57,6 @@ export class InfrastructureStack extends cdk.Stack {
       {
         comment: "Security headers response header policy",
         securityHeadersBehavior: {
-          contentSecurityPolicy: {
-            override: true,
-            contentSecurityPolicy: "default-src 'self'",
-          },
           strictTransportSecurity: {
             override: true,
             accessControlMaxAge: cdk.Duration.days(2 * 365),
@@ -119,18 +115,6 @@ export class InfrastructureStack extends cdk.Stack {
       zone,
     });
 
-    /**
-     * Comment this out if creating a new table
-     */
-    // const table = cdk.aws_dynamodb.Table.fromTableArn(
-    //   this,
-    //   `TodosTable-${env}`,
-    //   `arn:aws:dynamodb:eu-west-2:011624951925:table/TodoTable-${env}`
-    // );
-
-    /**
-     * Uncomment this to create new table if necessary
-     */
     const table = new cdk.aws_dynamodb.Table(this, `TodosTable-${env}`, {
       partitionKey: { name: "id", type: cdk.aws_dynamodb.AttributeType.STRING },
       tableName: `TodosTable-${env}`,
