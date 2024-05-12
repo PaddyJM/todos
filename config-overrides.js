@@ -1,25 +1,17 @@
 // @ts-nocheck
-const webpack = require("webpack");
+const { override } = require("customize-cra");
+const cspHtmlWebpackPlugin = require("csp-html-webpack-plugin");
+
+const cspConfigPolicy = {
+  "default-src": "'self' 'unsafe-inline'",
+};
+
+function addCspHtmlWebpackPlugin(config) {
+  config.plugins.push(new cspHtmlWebpackPlugin(cspConfigPolicy));
+
+  return config;
+}
+
 module.exports = {
-  webpack: function (config, env) {
-    config.resolve.fallback = {
-      path: require.resolve("path-browserify"),
-      os: require.resolve("os-browserify/browser"),
-      crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify"),
-      buffer: require.resolve("buffer"),
-      "process/browser": require.resolve("process/browser"),
-    };
-    config.plugins.push(
-      new webpack.ProvidePlugin({
-        Buffer: ["buffer", "Buffer"],
-      })
-    );
-    config.plugins.push(
-      new webpack.ProvidePlugin({
-        process: "process/browser.js",
-      })
-    );
-    return config;
-  },
+  webpack: override(addCspHtmlWebpackPlugin),
 };
