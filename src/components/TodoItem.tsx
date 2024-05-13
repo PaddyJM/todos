@@ -3,13 +3,12 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
-import { useDispatch } from "react-redux";
-import { deleteTodo, updateTodo } from "../slices/todoSlice";
 import styles from "../styles/modules/todoItem.module.scss";
 import { getClasses } from "../utils/getClasses";
 import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
+import useTodosStore from "../app/store";
 
 const child = {
   hidden: { y: 20, opacity: 0 },
@@ -19,8 +18,7 @@ const child = {
   },
 };
 
-function TodoItem({ todo }: {todo: Todo}) {
-  const dispatch = useDispatch();
+function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
 
@@ -32,15 +30,15 @@ function TodoItem({ todo }: {todo: Todo}) {
     }
   }, [todo.status]);
 
+  const { updateTodo, deleteTodo } = useTodosStore();
+
   const handleCheck = () => {
     setChecked(!checked);
-    dispatch(
-      updateTodo({ ...todo, status: checked ? "incomplete" : "complete" }),
-    );
+    updateTodo({ ...todo, status: checked ? "incomplete" : "complete" });
   };
 
   const handleDelete = () => {
-    dispatch(deleteTodo(todo.id));
+    deleteTodo(todo.id);
     toast.success("Todo Deleted Successfully");
   };
 
@@ -53,7 +51,7 @@ function TodoItem({ todo }: {todo: Todo}) {
       <motion.div className={styles.item} variants={child}>
         <div className={styles.todoDetails}>
           <CheckButton checked={checked} handleCheck={handleCheck} />
-          <div className={styles.texts}>
+          <div >
             <p
               className={getClasses([
                 styles.todoText,

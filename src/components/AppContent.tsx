@@ -1,9 +1,8 @@
 import { AnimatePresence, Reorder, motion } from "framer-motion";
-import { useSelector } from "react-redux";
+import useTodosStore from "../app/store";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
-import { RootTodoState } from "../types";
-import { useState } from "react";
+import { useEffect } from "react";
 
 const container = {
   hidden: { opacity: 1 },
@@ -24,24 +23,24 @@ const child = {
 };
 
 function AppContent() {
-  const todoList = useSelector((state: RootTodoState) => state.todo.todoList);
-  const filterStatus = useSelector(
-    (state: RootTodoState) => state.todo.filterStatus
-  );
+  const todoList = useTodosStore((state) => state.todoList);
+  const filterStatus = useTodosStore((state) => state.filterStatus);
+  const setTodos = useTodosStore((state) => state.setTodos);
 
-  const sortedTodoList = [...todoList];
-  sortedTodoList.sort(
-    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
-  );
+  let items = todoList;
+  useEffect(() => {
+    const sortedTodoList = [...todoList];
+    sortedTodoList.sort(
+      (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
 
-  const filteredTodoList = sortedTodoList.filter((item) => {
-    if (filterStatus === "all") {
-      return true;
-    }
-    return item.status === filterStatus;
-  });
-
-  const [items, setItems] = useState(filteredTodoList);
+    items = sortedTodoList.filter((item) => {
+      if (filterStatus === "all") {
+        return true;
+      }
+      return item.status === filterStatus;
+    });
+  }, [todoList, filterStatus]);
 
   return (
     <motion.div
@@ -51,7 +50,7 @@ function AppContent() {
       animate="visible"
     >
       <AnimatePresence>
-        <Reorder.Group axis="y" values={items} onReorder={setItems}>
+        <Reorder.Group axis="y" values={items} onReorder={setTodos}>
           {items && items.length > 0 ? (
             items.map((item) => (
               <Reorder.Item key={item.id} value={item}>
