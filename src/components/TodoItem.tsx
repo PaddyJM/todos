@@ -48,10 +48,10 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   return (
     <>
-      <motion.div className={styles.item} variants={child}>
+      <div className={styles.item}>
         <div className={styles.todoDetails}>
           <CheckButton checked={checked} handleCheck={handleCheck} />
-          <div >
+          <div>
             <p
               className={getClasses([
                 styles.todoText,
@@ -85,7 +85,7 @@ function TodoItem({ todo }: { todo: Todo }) {
             <MdEdit />
           </div>
         </div>
-      </motion.div>
+      </div>
       <TodoModal
         type="update"
         modalOpen={updateModalOpen}
