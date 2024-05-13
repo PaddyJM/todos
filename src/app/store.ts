@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
 import axios from "axios";
+import Client from "../http/Client";
 
 type TodosStore = {
   filterStatus: string;
@@ -12,6 +13,8 @@ type TodosStore = {
   deleteTodo: (userId: string, id: string) => void;
   setTodos: (todoList: Todo[]) => void;
 };
+
+const client = new Client("http://localhost:3000/todos");
 
 const initialTodoList = JSON.parse(
   window.localStorage.getItem("todoList") ?? "[]"
@@ -33,10 +36,7 @@ const useTodosStore = create<TodosStore>(
           ...todo,
         });
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        axios.put("http://localhost:3000/todos", {
-          id: userId,
-          todoList: todoListArr,
-        });
+        client.putTodoList(userId, todoListArr);
       } else {
         window.localStorage.setItem(
           "todoList",
@@ -46,14 +46,11 @@ const useTodosStore = create<TodosStore>(
             },
           ])
         );
-        axios.put("http://localhost:3000/todos", {
-          id: userId,
-          todoList: [
-            {
-              ...todo,
-            },
-          ],
-        });
+        client.putTodoList(userId, [
+          {
+            ...todo,
+          },
+        ]);
       }
     },
     updateTodo: (userId: string, updatedTodo: Todo) => {
@@ -72,10 +69,7 @@ const useTodosStore = create<TodosStore>(
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
-        axios.put("http://localhost:3000/todos", {
-          id: userId,
-          todoList: todoListArr,
-        });
+        client.putTodoList(userId, todoListArr);
       }
     },
     deleteTodo: (userId: string, id: string) => {
@@ -93,10 +87,7 @@ const useTodosStore = create<TodosStore>(
             return todo.id !== id;
           }),
         }));
-        axios.put("http://localhost:3000/todos", {
-          id: userId,
-          todoList: todoListArr,
-        });
+        client.putTodoList(userId, todoListArr);
       }
     },
     setTodos: (todoList: Todo[]) => {
