@@ -8,7 +8,7 @@ type TodosStore = {
   setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[];
   addTodo: (userId: string, todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
+  updateTodo: (userId: string, todo: Todo) => void;
   deleteTodo: (id: string) => void;
   setTodos: (todoList: Todo[]) => void;
 };
@@ -56,7 +56,7 @@ const useTodosStore = create<TodosStore>(
         });
       }
     },
-    updateTodo: (updatedTodo: Todo) => {
+    updateTodo: (userId: string, updatedTodo: Todo) => {
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
@@ -72,6 +72,10 @@ const useTodosStore = create<TodosStore>(
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
+        axios.put("http://localhost:3000/todos", {
+          id: userId,
+          todoList: todoListArr,
+        });
       }
     },
     deleteTodo: (id: string) => {

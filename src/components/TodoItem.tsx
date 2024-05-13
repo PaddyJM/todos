@@ -8,6 +8,7 @@ import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
 import useTodosStore from "../app/store";
+import { useAuth0 } from "@auth0/auth0-react";
 
 function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
@@ -23,9 +24,14 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   const { updateTodo, deleteTodo } = useTodosStore();
 
+  const auth = useAuth0();
+
   const handleCheck = () => {
     setChecked(!checked);
-    updateTodo({ ...todo, status: checked ? "incomplete" : "complete" });
+    updateTodo(auth.user?.sub ?? "", {
+      ...todo,
+      status: checked ? "incomplete" : "complete",
+    });
   };
 
   const handleDelete = () => {
