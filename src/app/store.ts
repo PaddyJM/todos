@@ -46,6 +46,14 @@ const useTodosStore = create<TodosStore>(
             },
           ])
         );
+        axios.put("http://localhost:3000/todos", {
+          id: userId,
+          todoList: [
+            {
+              ...todo,
+            },
+          ],
+        });
       }
     },
     updateTodo: (updatedTodo: Todo) => {
