@@ -12,7 +12,9 @@ type TodosStore = {
   setTodos: (todoList: Todo[]) => void;
 };
 
-const initialTodoList = window.localStorage.getItem("todoList");
+const initialTodoList = JSON.parse(
+  window.localStorage.getItem("todoList") ?? "[]"
+) as Todo[];
 
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
