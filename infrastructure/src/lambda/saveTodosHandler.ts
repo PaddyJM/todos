@@ -27,15 +27,15 @@ export const handler = async (
   const schema = new dynamoose.Schema(
     {
       id: String,
-      todos: {
+      todoList: {
         type: Array,
         schema: [
           {
             type: Object,
             schema: {
-              id: Number,
+              id: String,
               title: String,
-              status: Boolean,
+              status: String,
               time: String,
             },
           },
@@ -71,11 +71,11 @@ export const handler = async (
 
   const validationSchema = z.object({
     id: z.string(),
-    todos: z.array(
+    todoList: z.array(
       z.object({
-        id: z.number(),
+        id: z.string(),
         title: z.string(),
-        status: z.boolean(),
+        status: z.string(),
         time: z.string(),
       })
     ),
@@ -92,7 +92,7 @@ export const handler = async (
 
     const todos = new Todos({
       id: parsedBody.id,
-      todos: parsedBody.todos,
+      todoList: parsedBody.todoList,
     });
 
     result = await todos.save();

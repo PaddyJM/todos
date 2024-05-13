@@ -8,6 +8,7 @@ import styles from "../styles/modules/modal.module.scss";
 import Button from "./Button";
 import { Todo } from "../types";
 import useTodosStore from "../app/store";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const dropIn = {
   hidden: {
@@ -56,6 +57,8 @@ function TodoModal({
 
   const { addTodo, updateTodo } = useTodosStore();
 
+  const auth = useAuth0();
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (title === "") {
@@ -64,7 +67,7 @@ function TodoModal({
     }
     if (title && status) {
       if (type === "add") {
-        addTodo({
+        addTodo(auth.user?.sub as string, {
           id: uuid(),
           title,
           status,

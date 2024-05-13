@@ -1,12 +1,13 @@
 import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
+import axios from "axios";
 
 type TodosStore = {
   filterStatus: string;
   setFilterState: (filterStatus: string) => void;
   todoList: Todo[];
-  addTodo: (todo: Todo) => void;
+  addTodo: (userId: string, todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: string) => void;
   setTodos: (todoList: Todo[]) => void;
@@ -21,15 +22,19 @@ const useTodosStore = create<TodosStore>(
     filterStatus: "all",
     setFilterState: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
-    addTodo: (todo: Todo) => {
+    addTodo: (userId: string, todo: Todo) => {
       set((state: any) => ({ todoList: [...state.todoList, todo] }));
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
-        const todoListArr = JSON.parse(todoList);
+        const todoListArr = JSON.parse(todoList) as Todo[];
         todoListArr.push({
           ...todo,
         });
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        axios.put("http://localhost:3000/todos", {
+          id: userId,
+          todoList: todoListArr
+        });
       } else {
         window.localStorage.setItem(
           "todoList",
@@ -39,7 +44,7 @@ const useTodosStore = create<TodosStore>(
             },
           ])
         );
-      }
+      } 
     },
     updateTodo: (updatedTodo: Todo) => {
       const todoList = window.localStorage.getItem("todoList");

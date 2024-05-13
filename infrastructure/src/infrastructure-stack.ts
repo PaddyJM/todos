@@ -41,7 +41,7 @@ export class InfrastructureStack extends cdk.Stack {
     );
 
     const zone = cdk.aws_route53.HostedZone.fromLookup(this, "TodosZone", {
-      domainName: 'patrickmorton.co.uk',
+      domainName: "patrickmorton.co.uk",
     });
 
     const certificate =
@@ -108,7 +108,7 @@ export class InfrastructureStack extends cdk.Stack {
     );
 
     new cdk.aws_route53.ARecord(this, "ARecord", {
-      recordName: 'todos',
+      recordName: "todos",
       target: cdk.aws_route53.RecordTarget.fromAlias(
         new cdk.aws_route53_targets.CloudFrontTarget(cloudfrontDistribution)
       ),
@@ -132,6 +132,10 @@ export class InfrastructureStack extends cdk.Stack {
     const api = new cdk.aws_apigateway.LambdaRestApi(this, `TodosApi-${env}`, {
       handler: lambda,
       proxy: false,
+      defaultCorsPreflightOptions: {
+        allowOrigins: cdk.aws_apigateway.Cors.ALL_ORIGINS,
+        allowMethods: cdk.aws_apigateway.Cors.ALL_METHODS,
+      },
     });
 
     table.grantReadWriteData(lambda);
