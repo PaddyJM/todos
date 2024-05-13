@@ -2,7 +2,6 @@ import { AnimatePresence, Reorder, motion } from "framer-motion";
 import useTodosStore from "../app/store";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
-import { useEffect } from "react";
 import { Todo } from "../types";
 
 const container = {
