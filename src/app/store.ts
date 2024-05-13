@@ -22,7 +22,9 @@ const useTodosStore = create<TodosStore>(
     setFilterState: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
     addTodo: (todo: Todo) => {
-      set((state: any) => ({ todoList: [...state.todoList, todo] }));
+      set((state: any) => ({
+        todoList: [...state.todoList, todo],
+      }));
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
@@ -76,7 +78,9 @@ const useTodosStore = create<TodosStore>(
         }));
       }
     },
-    setTodos: (todoList: Todo[]) => set(() => ({ todoList })),
+    setTodos: (todoList: Todo[]) => {
+      set(() => ({ todoList }))
+      window.localStorage.setItem("todoList", JSON.stringify(todoList));},
   }))
 );
 
