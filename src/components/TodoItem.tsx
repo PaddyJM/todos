@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -9,14 +8,6 @@ import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
 import useTodosStore from "../app/store";
-
-const child = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
 
 function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
