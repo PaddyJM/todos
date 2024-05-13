@@ -4,7 +4,7 @@ import zukeeper from "zukeeper";
 
 type TodosStore = {
   filterStatus: string;
-  setFilterState: (filterStatus: string) => void;
+  setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[];
   addTodo: (todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
@@ -19,7 +19,7 @@ const initialTodoList = JSON.parse(
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
-    setFilterState: (filterStatus: string) => set(() => ({ filterStatus })),
+    setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
     addTodo: (todo: Todo) => {
       set((state: any) => ({
