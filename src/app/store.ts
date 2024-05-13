@@ -2,16 +2,20 @@ import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
 import axios from "axios";
+import Client from "../http/Client";
+import axios from "axios";
 
 type TodosStore = {
   filterStatus: string;
-  setFilterState: (filterStatus: string) => void;
+  setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[];
   addTodo: (userId: string, todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
-  deleteTodo: (id: string) => void;
+  updateTodo: (userId: string, todo: Todo) => void;
+  deleteTodo: (userId: string, id: string) => void;
   setTodos: (todoList: Todo[]) => void;
 };
+
+const client = new Client("http://localhost:3000/todos");
 
 const initialTodoList = JSON.parse(
   window.localStorage.getItem("todoList") ?? "[]"
@@ -20,10 +24,12 @@ const initialTodoList = JSON.parse(
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
-    setFilterState: (filterStatus: string) => set(() => ({ filterStatus })),
+    setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
     addTodo: (userId: string, todo: Todo) => {
-      set((state: any) => ({ todoList: [...state.todoList, todo] }));
+      set((state: any) => ({
+        todoList: [...state.todoList, todo],
+      }));
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList) as Todo[];
@@ -31,10 +37,7 @@ const useTodosStore = create<TodosStore>(
           ...todo,
         });
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        axios.put("http://localhost:3000/todos", {
-          id: userId,
-          todoList: todoListArr
-        });
+        client.putTodoList(userId, todoListArr);
       } else {
         window.localStorage.setItem(
           "todoList",
@@ -44,9 +47,14 @@ const useTodosStore = create<TodosStore>(
             },
           ])
         );
-      } 
+        client.putTodoList(userId, [
+          {
+            ...todo,
+          },
+        ]);
+      }
     },
-    updateTodo: (updatedTodo: Todo) => {
+    updateTodo: (userId: string, updatedTodo: Todo) => {
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
@@ -62,9 +70,10 @@ const useTodosStore = create<TodosStore>(
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
+        client.putTodoList(userId, todoListArr);
       }
     },
-    deleteTodo: (id: string) => {
+    deleteTodo: (userId: string, id: string) => {
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
@@ -79,9 +88,13 @@ const useTodosStore = create<TodosStore>(
             return todo.id !== id;
           }),
         }));
+        client.putTodoList(userId, todoListArr);
       }
     },
-    setTodos: (todoList: Todo[]) => set(() => ({ todoList })),
+    setTodos: (todoList: Todo[]) => {
+      set(() => ({ todoList }));
+      window.localStorage.setItem("todoList", JSON.stringify(todoList));
+    },
   }))
 );
 

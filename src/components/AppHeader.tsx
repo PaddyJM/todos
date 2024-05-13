@@ -7,14 +7,11 @@ import useTodosStore from "../app/store";
 
 function AppHeader() {
   const [modalOpen, setModalOpen] = useState(false);
-  const initialFilterStatus = useTodosStore((state) => state.filterStatus);
-  const [filterStatus, setFilterStatus] = useState(initialFilterStatus);
+  const filterStatus = useTodosStore((state) => state.filterStatus);
+  const setFilterStatus = useTodosStore((state) => state.setFilterStatus);
 
   function UpdateFilter(e: ChangeEvent<HTMLSelectElement>) {
     setFilterStatus(e.target.value);
-    useTodosStore((state: any) => {
-      state.filterStatus(e.target.value);
-    });
   }
 
   const { logout } = useAuth0();

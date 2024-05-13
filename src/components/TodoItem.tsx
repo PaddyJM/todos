@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
@@ -9,14 +8,7 @@ import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
 import useTodosStore from "../app/store";
-
-const child = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-  },
-};
+import { useAuth0 } from "@auth0/auth0-react";
 
 function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
@@ -32,13 +24,18 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   const { updateTodo, deleteTodo } = useTodosStore();
 
+  const auth = useAuth0();
+
   const handleCheck = () => {
     setChecked(!checked);
-    updateTodo({ ...todo, status: checked ? "incomplete" : "complete" });
+    updateTodo(auth.user?.sub ?? "", {
+      ...todo,
+      status: checked ? "incomplete" : "complete",
+    });
   };
 
   const handleDelete = () => {
-    deleteTodo(todo.id);
+    deleteTodo(auth.user?.sub ?? "", todo.id);
     toast.success("Todo Deleted Successfully");
   };
 
@@ -48,10 +45,10 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   return (
     <>
-      <motion.div className={styles.item} variants={child}>
+      <div className={styles.item}>
         <div className={styles.todoDetails}>
           <CheckButton checked={checked} handleCheck={handleCheck} />
-          <div >
+          <div>
             <p
               className={getClasses([
                 styles.todoText,
@@ -85,7 +82,7 @@ function TodoItem({ todo }: { todo: Todo }) {
             <MdEdit />
           </div>
         </div>
-      </motion.div>
+      </div>
       <TodoModal
         type="update"
         modalOpen={updateModalOpen}

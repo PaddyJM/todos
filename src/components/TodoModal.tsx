@@ -67,7 +67,7 @@ function TodoModal({
     }
     if (title && status) {
       if (type === "add") {
-        addTodo(auth.user?.sub as string, {
+        addTodo(auth.user?.sub ?? "", {
           id: uuid(),
           title,
           status,
@@ -77,7 +77,7 @@ function TodoModal({
       }
       if (type === "update") {
         if (todo && (todo.title !== title || todo.status !== status)) {
-          updateTodo({ ...todo, title, status });
+          updateTodo(auth.user?.sub ?? "", { ...todo, title, status });
           toast.success("Task Updated successfully");
         } else {
           toast.error("No changes made");
