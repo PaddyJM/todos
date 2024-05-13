@@ -35,7 +35,7 @@ function TodoItem({ todo }: { todo: Todo }) {
   };
 
   const handleDelete = () => {
-    deleteTodo(todo.id);
+    deleteTodo(auth.user?.sub ?? "", todo.id);
     toast.success("Todo Deleted Successfully");
   };
 
