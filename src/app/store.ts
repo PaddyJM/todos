@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
-import axios from "axios";
 import Client from "../http/Client";
-import axios from "axios";
 
 type TodosStore = {
   filterStatus: string;
