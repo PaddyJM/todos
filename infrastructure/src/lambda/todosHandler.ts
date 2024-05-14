@@ -69,33 +69,42 @@ export const handler = async (
     }
   );
 
-  const validationSchema = z.object({
-    id: z.string(),
-    todoList: z.array(
-      z.object({
-        id: z.string(),
-        title: z.string(),
-        status: z.string(),
-        time: z.string(),
-      })
-    ),
-  });
-
-  const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
-
   let result;
   try {
     const Todos = dynamoose.model("Todos", schema, {
       tableName: `TodosTable-${env}`,
       create: env === "test" ? true : false,
     });
+    if (event.httpMethod === "PUT") {
+      const validationSchema = z.object({
+        id: z.string(),
+        todoList: z.array(
+          z.object({
+            id: z.string(),
+            title: z.string(),
+            status: z.string(),
+            time: z.string(),
+          })
+        ),
+      });
 
-    const todos = new Todos({
-      id: parsedBody.id,
-      todoList: parsedBody.todoList,
-    });
+      const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
 
-    result = await todos.save();
+      const todos = new Todos({
+        id: parsedBody.id,
+        todoList: parsedBody.todoList,
+      });
+
+      result = await todos.save();
+    } else if (event.httpMethod === "GET") {
+      const validationSchema = z.object({
+        id: z.string(),
+      });
+
+      const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
+      
+      result = await Todos.get(parsedBody.id);
+    }
   } catch (error) {
     console.error(error);
     return {

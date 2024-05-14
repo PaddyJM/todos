@@ -1,4 +1,4 @@
-import { handler } from "../src/lambda/saveTodosHandler";
+import { handler } from "../src/lambda/todosHandler";
 import { createApiGatewayEvent } from "./utils/aws";
 
 it("calls the handler", async () => {

@@ -123,7 +123,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
-      entry: path.join(__dirname, "./lambda/saveTodosHandler.ts"),
+      entry: path.join(__dirname, "./lambda/todosHandler.ts"),
       environment: {
         TODOS_TABLE: table.tableName,
       },
@@ -140,6 +140,8 @@ export class InfrastructureStack extends cdk.Stack {
 
     table.grantReadWriteData(lambda);
 
-    api.root.addResource("todos").addMethod("PUT");
+    const resource = api.root.addResource("todos")
+    resource.addMethod("PUT");
+    resource.addMethod("GET");
   }
 }
