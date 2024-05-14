@@ -110,8 +110,13 @@ const useTodosStore = create<TodosStore>(
       }
     },
     setTodos: (todoList: Todo[]) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
       set(() => ({ todoList }));
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
+      client.putTodoList(userId, todoList);
     },
   }))
 );
