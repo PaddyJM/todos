@@ -1,5 +1,4 @@
 import { format } from "date-fns";
-import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import styles from "../styles/modules/todoItem.module.scss";
@@ -34,7 +33,6 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   const handleDelete = () => {
     deleteTodo(todo.id);
-    toast.success("Todo Deleted Successfully");
   };
 
   const handleUpdate = () => {

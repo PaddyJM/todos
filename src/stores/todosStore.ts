@@ -3,6 +3,7 @@ import { Todo } from "../types";
 import zukeeper from "zukeeper";
 import Client from "../http/Client";
 import useUserStore from "./userStore";
+import toast from "react-hot-toast";
 
 type TodosStore = {
   filterStatus: string;
@@ -64,6 +65,7 @@ const useTodosStore = create<TodosStore>(
           },
         ]);
       }
+      toast.success("Task Added Successfully");
     },
     updateTodo: (updatedTodo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
@@ -86,6 +88,7 @@ const useTodosStore = create<TodosStore>(
           }),
         }));
         client.putTodoList(userId, todoListArr);
+        toast.success("Task Updated successfully");
       }
     },
     deleteTodo: (id: string) => {
@@ -108,6 +111,7 @@ const useTodosStore = create<TodosStore>(
           }),
         }));
         client.putTodoList(userId, todoListArr);
+        toast.success("Todo Deleted Successfully");
       }
     },
     setTodos: (todoList: Todo[]) => {
@@ -118,6 +122,7 @@ const useTodosStore = create<TodosStore>(
       set(() => ({ todoList }));
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
       client.putTodoList(userId, todoList);
+      toast.success("Todo List Updated Successfully");
     },
   }))
 );

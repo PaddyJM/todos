@@ -73,12 +73,10 @@ function TodoModal({
           status,
           time: format(new Date(), "p, MM/dd/yyyy"),
         });
-        toast.success("Task added successfully");
       }
       if (type === "update") {
         if (todo && (todo.title !== title || todo.status !== status)) {
           updateTodo( { ...todo, title, status });
-          toast.success("Task Updated successfully");
         } else {
           toast.error("No changes made");
           return;
