@@ -47,11 +47,9 @@ function AppContent() {
         <Reorder.Group axis="y" values={todoList} onReorder={setTodos}>
           {todoList && todoList.length > 0 ? (
             getFilteredTodoList(todoList, filterStatus).map((todo) => (
-              <motion.div variants={child}>
-                <Reorder.Item key={todo.id} value={todo}>
-                  <TodoItem key={todo.id} todo={todo} />
-                </Reorder.Item>
-              </motion.div>
+              <Reorder.Item key={todo.id} value={todo}>
+                <TodoItem key={todo.id} todo={todo} />
+              </Reorder.Item>
             ))
           ) : (
             <motion.p variants={child} className={styles.emptyText}>
