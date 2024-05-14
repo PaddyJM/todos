@@ -3,7 +3,7 @@ import Button, { SelectButton } from "./Button";
 import styles from "../styles/modules/app.module.scss";
 import TodoModal from "./TodoModal";
 import { useAuth0 } from "@auth0/auth0-react";
-import useTodosStore from "../app/store";
+import useTodosStore from "../stores/todosStore";
 
 function AppHeader() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -39,11 +39,7 @@ function AppHeader() {
       <Button type="button" variant="primary" onClick={() => logout()}>
         Log out
       </Button>
-      <TodoModal
-        type="add"
-        modalOpen={modalOpen}
-        setModalOpen={setModalOpen}
-      />
+      <TodoModal type="add" modalOpen={modalOpen} setModalOpen={setModalOpen} />
     </div>
   );
 }

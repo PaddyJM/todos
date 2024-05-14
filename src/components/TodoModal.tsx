@@ -7,7 +7,7 @@ import { format } from "date-fns";
 import styles from "../styles/modules/modal.module.scss";
 import Button from "./Button";
 import { Todo } from "../types";
-import useTodosStore from "../app/store";
+import useTodosStore from "../stores/todosStore";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const dropIn = {

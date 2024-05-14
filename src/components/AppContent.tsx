@@ -1,5 +1,5 @@
 import { AnimatePresence, Reorder, motion } from "framer-motion";
-import useTodosStore from "../app/store";
+import useTodosStore from "../stores/todosStore";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
 import { Todo } from "../types";

@@ -7,7 +7,7 @@ import { getClasses } from "../utils/getClasses";
 import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
-import useTodosStore from "../app/store";
+import useTodosStore from "../stores/todosStore";
 import { useAuth0 } from "@auth0/auth0-react";
 
 function TodoItem({ todo }: { todo: Todo }) {
