@@ -15,9 +15,12 @@ type TodosStore = {
 
 const client = new Client("http://localhost:3000/todos");
 
-const initialTodoList = JSON.parse(
-  window.localStorage.getItem("todoList") ?? "[]"
-) as Todo[];
+let initialTodoList: Todo[] = [];
+try {
+  initialTodoList = JSON.parse(window.localStorage.getItem("todoList") ?? "[]");
+} catch (error) {
+  console.error("Error parsing todoList from localStorage", error);
+}
 
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
