@@ -24,18 +24,16 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   const { updateTodo, deleteTodo } = useTodosStore();
 
-  const auth = useAuth0();
-
   const handleCheck = () => {
     setChecked(!checked);
-    updateTodo(auth.user?.sub ?? "", {
+    updateTodo({
       ...todo,
       status: checked ? "incomplete" : "complete",
     });
   };
 
   const handleDelete = () => {
-    deleteTodo(auth.user?.sub ?? "", todo.id);
+    deleteTodo(todo.id);
     toast.success("Todo Deleted Successfully");
   };
 

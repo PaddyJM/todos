@@ -9,8 +9,8 @@ type TodosStore = {
   setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[];
   addTodo: (todo: Todo) => void;
-  updateTodo: (userId: string, todo: Todo) => void;
-  deleteTodo: (userId: string, id: string) => void;
+  updateTodo: (todo: Todo) => void;
+  deleteTodo: (id: string) => void;
   setTodos: (todoList: Todo[]) => void;
 };
 
@@ -29,12 +29,10 @@ const useTodosStore = create<TodosStore>(
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
     addTodo: (todo: Todo) => {
-      const userId = useUserStore.getState().user.sub;
-      if (!userId) {
-        console.error("No user id found");
-        return;
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
       }
-
       set((state: any) => ({
         todoList: [...state.todoList, todo],
       }));
@@ -66,7 +64,11 @@ const useTodosStore = create<TodosStore>(
         ]);
       }
     },
-    updateTodo: (userId: string, updatedTodo: Todo) => {
+    updateTodo: (updatedTodo: Todo) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
@@ -85,7 +87,11 @@ const useTodosStore = create<TodosStore>(
         client.putTodoList(userId, todoListArr);
       }
     },
-    deleteTodo: (userId: string, id: string) => {
+    deleteTodo: (id: string) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
       const todoList = window.localStorage.getItem("todoList");
       if (todoList) {
         const todoListArr = JSON.parse(todoList);

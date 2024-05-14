@@ -77,7 +77,7 @@ function TodoModal({
       }
       if (type === "update") {
         if (todo && (todo.title !== title || todo.status !== status)) {
-          updateTodo(auth.user?.sub ?? "", { ...todo, title, status });
+          updateTodo( { ...todo, title, status });
           toast.success("Task Updated successfully");
         } else {
           toast.error("No changes made");
