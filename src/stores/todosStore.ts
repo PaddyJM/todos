@@ -30,7 +30,7 @@ const useTodosStore = create<TodosStore>(
       set(() => ({ todoList: response.data.todoList }));
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
     },
-    addTodo: (todo: Todo) => {
+    addTodo: async (todo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
@@ -41,6 +41,7 @@ const useTodosStore = create<TodosStore>(
 
       const todoList = window.localStorage.getItem("todoList");
 
+      let response;
       if (todoList) {
         const todoListArr = JSON.parse(todoList) as Todo[];
         todoListArr.push({
@@ -49,7 +50,7 @@ const useTodosStore = create<TodosStore>(
 
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
 
-        client.putTodoList(userId, todoListArr);
+        response = await client.putTodoList(userId, todoListArr);
       } else {
         window.localStorage.setItem(
           "todoList",
@@ -59,15 +60,17 @@ const useTodosStore = create<TodosStore>(
             },
           ])
         );
-        client.putTodoList(userId, [
+        response = await client.putTodoList(userId, [
           {
             ...todo,
           },
         ]);
       }
-      toast.success("Task Added Successfully");
+      if (response) {
+        toast.success("Task Added Successfully");
+      }
     },
-    updateTodo: (updatedTodo: Todo) => {
+    updateTodo: async (updatedTodo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
@@ -87,11 +90,11 @@ const useTodosStore = create<TodosStore>(
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
-        client.putTodoList(userId, todoListArr);
-        toast.success("Task Updated successfully");
+        const response = await client.putTodoList(userId, todoListArr);
+        if (response) toast.success("Task Updated successfully");
       }
     },
-    deleteTodo: (id: string) => {
+    deleteTodo: async (id: string) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
@@ -110,8 +113,8 @@ const useTodosStore = create<TodosStore>(
             return todo.id !== id;
           }),
         }));
-        client.putTodoList(userId, todoListArr);
-        toast.success("Todo Deleted Successfully");
+        const response = await client.putTodoList(userId, todoListArr);
+        if (response) toast.success("Todo Deleted Successfully");
       }
     },
     setTodos: (todoList: Todo[]) => {
