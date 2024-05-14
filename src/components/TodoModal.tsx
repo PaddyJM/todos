@@ -67,7 +67,7 @@ function TodoModal({
     }
     if (title && status) {
       if (type === "add") {
-        addTodo(auth.user?.sub ?? "", {
+        addTodo({
           id: uuid(),
           title,
           status,

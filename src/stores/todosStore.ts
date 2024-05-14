@@ -2,12 +2,13 @@ import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
 import Client from "../http/Client";
+import useUserStore from "./userStore";
 
 type TodosStore = {
   filterStatus: string;
   setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[];
-  addTodo: (userId: string, todo: Todo) => void;
+  addTodo: (todo: Todo) => void;
   updateTodo: (userId: string, todo: Todo) => void;
   deleteTodo: (userId: string, id: string) => void;
   setTodos: (todoList: Todo[]) => void;
@@ -27,17 +28,27 @@ const useTodosStore = create<TodosStore>(
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: initialTodoList ?? ([] as Todo[]),
-    addTodo: (userId: string, todo: Todo) => {
+    addTodo: (todo: Todo) => {
+      const userId = useUserStore.getState().user.sub;
+      if (!userId) {
+        console.error("No user id found");
+        return;
+      }
+
       set((state: any) => ({
         todoList: [...state.todoList, todo],
       }));
+
       const todoList = window.localStorage.getItem("todoList");
+
       if (todoList) {
         const todoListArr = JSON.parse(todoList) as Todo[];
         todoListArr.push({
           ...todo,
         });
+
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+
         client.putTodoList(userId, todoListArr);
       } else {
         window.localStorage.setItem(
