@@ -3,13 +3,14 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
-import { set } from "date-fns";
+import useTodosStore from "../stores/todosStore";
 
 function AppContainer() {
   const { isLoading, isAuthenticated, error, loginWithRedirect, user } =
     useAuth0();
 
   const setUser = useUserStore((state) => state.setUser);
+  const getInitialTodoList = useTodosStore((state) => state.getInitialTodoList);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -20,6 +21,7 @@ function AppContainer() {
 
   if (isAuthenticated && user) {
     setUser(user);
+    getInitialTodoList();
     return (
       <>
         <AppHeader />

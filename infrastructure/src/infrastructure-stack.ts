@@ -140,8 +140,10 @@ export class InfrastructureStack extends cdk.Stack {
 
     table.grantReadWriteData(lambda);
 
-    const resource = api.root.addResource("todos")
-    resource.addMethod("PUT");
-    resource.addMethod("GET");
+    const todosResource = api.root.addResource("todos")
+    todosResource.addMethod("PUT");
+
+    const userIdParam = todosResource.addResource("{userId}");
+    userIdParam.addMethod("GET");
   }
 }

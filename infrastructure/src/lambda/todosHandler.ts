@@ -97,13 +97,9 @@ export const handler = async (
 
       result = await todos.save();
     } else if (event.httpMethod === "GET") {
-      const validationSchema = z.object({
-        id: z.string(),
-      });
 
-      const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
-      
-      result = await Todos.get(parsedBody.id);
+
+      result = await Todos.get(event.pathParameters?.userId ?? "");
     }
   } catch (error) {
     console.error(error);

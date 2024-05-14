@@ -13,4 +13,8 @@ export default class Client {
       todoList,
     });
   }
+
+  public async getTodoList(userId: string): Promise<any> {
+    return await axios.get(`${this.url}/${userId}`);
+  }
 }

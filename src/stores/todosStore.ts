@@ -12,22 +12,23 @@ type TodosStore = {
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: string) => void;
   setTodos: (todoList: Todo[]) => void;
+  getInitialTodoList: () => void;
 };
 
 const client = new Client("http://localhost:3000/todos");
-
-let initialTodoList: Todo[] = [];
-try {
-  initialTodoList = JSON.parse(window.localStorage.getItem("todoList") ?? "[]");
-} catch (error) {
-  console.error("Error parsing todoList from localStorage", error);
-}
 
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
-    todoList: initialTodoList ?? ([] as Todo[]),
+    todoList: [] as Todo[],
+    getInitialTodoList: async () => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      const response = await client.getTodoList(userId);
+      const todoList = response.data.todoList;
+      set(() => ({ todoList: response.data.todoList }));
+      window.localStorage.setItem("todoList", JSON.stringify(todoList));
+    },
     addTodo: (todo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
