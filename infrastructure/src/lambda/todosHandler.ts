@@ -105,7 +105,12 @@ export const handler = async (
           body: JSON.stringify(error),
         };
       }
-      result = await Todos.get(event.pathParameters?.userId ?? "");
+      result = await Todos.get(userId);
+      if(result === undefined) {
+        result = { id: userId, todoList: [] };
+      } else if (!result.todoList) {
+        throw new Error("Error retrieving todo list");
+      }
     }
   } catch (error) {
     console.error(error);
