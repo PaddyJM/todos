@@ -35,37 +35,18 @@ const useTodosStore = create<TodosStore>(
       if (userId === "") {
         throw new Error("User id not found");
       }
-      set((state: any) => ({
-        todoList: [...(state.todoList ? state.todoList : []), todo],
+      const todoList = window.localStorage.getItem("todoList");
+      const todoListArr = JSON.parse(todoList ? todoList : "{}") as Todo[];
+      const newTodoListArr = todoListArr ? [...todoListArr, todo] : [todo];
+
+      set(() => ({
+        todoList: newTodoListArr,
       }));
 
-      const todoList = window.localStorage.getItem("todoList");
+      window.localStorage.setItem("todoList", JSON.stringify(newTodoListArr));
 
-      let response;
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList) as Todo[];
-        todoListArr.push({
-          ...todo,
-        });
+      const response = await client.putTodoList(userId, newTodoListArr);
 
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-
-        response = await client.putTodoList(userId, todoListArr);
-      } else {
-        window.localStorage.setItem(
-          "todoList",
-          JSON.stringify([
-            {
-              ...todo,
-            },
-          ])
-        );
-        response = await client.putTodoList(userId, [
-          {
-            ...todo,
-          },
-        ]);
-      }
       if (response) {
         toast.success("Task Added Successfully");
       }
