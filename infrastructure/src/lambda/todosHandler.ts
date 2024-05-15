@@ -92,6 +92,19 @@ export const handler = async (
 
       result = await todos.save();
     } else if (event.httpMethod === "GET") {
+      let userId;
+      try {
+        userId = event.pathParameters?.userId;
+        if (!userId) {
+          throw new Error("userId is required");
+        }
+      } catch (error) {
+        console.error(error);
+        return {
+          statusCode: 400,
+          body: JSON.stringify(error),
+        };
+      }
       result = await Todos.get(event.pathParameters?.userId ?? "");
     }
   } catch (error) {
