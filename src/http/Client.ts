@@ -26,8 +26,7 @@ export default class Client {
       return await axios.get(`${this.URL}/todos/${userId}`);
     } catch (error) {
       console.error(error);
-      toast.error("Error retrieving todo list");
-      return { data: { todoList: [] } };
+      throw new Error("Error retrieving todo list");
     }
   }
 }
