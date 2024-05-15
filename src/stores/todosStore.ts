@@ -36,7 +36,7 @@ const useTodosStore = create<TodosStore>(
         throw new Error("User id not found");
       }
       set((state: any) => ({
-        todoList: [...state.todoList, todo],
+        todoList: [...(state.todoList ? state.todoList : []), todo],
       }));
 
       const todoList = window.localStorage.getItem("todoList");
