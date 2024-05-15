@@ -50,8 +50,6 @@ const useTodosStore = create<TodosStore>(
       }
       const newTodoListArr = todoListArr ? [...todoListArr, todo] : [todo];
 
-      console.log("newTodoListArr", newTodoListArr);
-
       set(() => ({
         todoList: newTodoListArr,
       }));
