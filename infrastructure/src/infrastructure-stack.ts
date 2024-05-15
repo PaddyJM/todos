@@ -126,6 +126,7 @@ export class InfrastructureStack extends cdk.Stack {
       entry: path.join(__dirname, "./lambda/todosHandler.ts"),
       environment: {
         TODOS_TABLE: table.tableName,
+        ENV: env,
       },
     });
 
