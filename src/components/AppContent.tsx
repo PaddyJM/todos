@@ -44,19 +44,19 @@ function AppContent() {
       animate="visible"
     >
       <AnimatePresence>
-        <Reorder.Group axis="y" values={todoList} onReorder={setTodos}>
-          {todoList && todoList.length > 0 ? (
-            getFilteredTodoList(todoList, filterStatus).map((todo) => (
+        {todoList && todoList.length > 0 ? (
+          <Reorder.Group axis="y" values={todoList} onReorder={setTodos}>
+            {getFilteredTodoList(todoList, filterStatus).map((todo) => (
               <Reorder.Item key={todo.id} value={todo}>
                 <TodoItem key={todo.id} todo={todo} />
               </Reorder.Item>
-            ))
-          ) : (
-            <motion.p variants={child} className={styles.emptyText}>
-              No Todos
-            </motion.p>
-          )}
-        </Reorder.Group>
+            ))}
+          </Reorder.Group>
+        ) : (
+          <motion.p variants={child} className={styles.emptyText}>
+            No Todos
+          </motion.p>
+        )}
       </AnimatePresence>
     </motion.div>
   );
