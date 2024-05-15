@@ -56,6 +56,13 @@ export class InfrastructureStack extends cdk.Stack {
       "SecurityHeadersResponseHeaderPolicy",
       {
         comment: "Security headers response header policy",
+        corsBehavior: {
+          accessControlAllowOrigins: ["*"],
+          accessControlAllowMethods: ["GET", "PUT", "POST", "DELETE"],
+          accessControlAllowHeaders: ["*"],
+          accessControlAllowCredentials: false,
+          originOverride: true,
+        },
         securityHeadersBehavior: {
           strictTransportSecurity: {
             override: true,
@@ -141,7 +148,7 @@ export class InfrastructureStack extends cdk.Stack {
 
     table.grantReadWriteData(lambda);
 
-    const todosResource = api.root.addResource("todos")
+    const todosResource = api.root.addResource("todos");
     todosResource.addMethod("PUT");
 
     const userIdParam = todosResource.addResource("{userId}");

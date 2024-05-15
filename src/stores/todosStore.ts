@@ -16,7 +16,7 @@ type TodosStore = {
   getInitialTodoList: () => void;
 };
 
-const client = new Client("http://localhost:3000/todos");
+const client = new Client();
 
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
