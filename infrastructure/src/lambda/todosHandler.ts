@@ -92,15 +92,12 @@ export const handler = async (
 
       result = await todos.save();
     } else if (event.httpMethod === "GET") {
-      const userId = event.pathParameters?.userId;
-      console.log('userId', userId);
+      const userId = decodeURI(event.pathParameters?.userId ?? "");
       if (!userId) {
         throw new Error("userId is required");
       }
 
       result = await Todos.get(userId);
-
-      console.log('result', result);
 
       if (result === undefined) {
         result = { id: userId, todoList: [] };

@@ -23,7 +23,7 @@ export default class Client {
 
   public async getTodoList(userId: string): Promise<any> {
     try {
-      return await axios.get(`${this.URL}/todos/${userId}`);
+      return await axios.get(`${this.URL}/todos/${encodeURI(userId)}`);
     } catch (error) {
       console.error(error);
       throw new Error("Error retrieving todo list");
