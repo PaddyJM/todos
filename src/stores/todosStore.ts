@@ -27,17 +27,30 @@ const useTodosStore = create<TodosStore>(
       const userId = useUserStore.getState().user.sub ?? "";
       const response = await client.getTodoList(userId);
       const todoList = response.data.todoList;
-      set(() => ({ todoList: response.data.todoList }));
-      window.localStorage.setItem("todoList", JSON.stringify(todoList));
+      if (todoList && todoList.length > 0) {
+        set(() => ({ todoList: response.data.todoList }));
+        window.localStorage.setItem("todoList", JSON.stringify(todoList));
+      } else {
+        set(() => ({ todoList: [] }));
+        window.localStorage.setItem("todoList", JSON.stringify([]));
+      }
     },
     addTodo: async (todo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
       }
-      const todoList = window.localStorage.getItem("todoList");
-      const todoListArr = JSON.parse(todoList ? todoList : "{}") as Todo[];
+      const todoListString = window.localStorage.getItem("todoList");
+      let todoListArr: Todo[] = [];
+      try {
+        todoListArr = JSON.parse(todoListString ?? "{}") as Todo[];
+      } catch (error) {
+        console.error(error);
+        toast.error("Error adding todo");
+      }
       const newTodoListArr = todoListArr ? [...todoListArr, todo] : [todo];
+
+      console.log("newTodoListArr", newTodoListArr);
 
       set(() => ({
         todoList: newTodoListArr,
