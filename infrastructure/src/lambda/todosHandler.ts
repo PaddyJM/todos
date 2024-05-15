@@ -13,11 +13,6 @@ export const handler = async (
       region: "localhost",
       endpoint: "http://dynamodb-local:8000",
     });
-  } else if (env === "test") {
-    ddb = new dynamoose.aws.ddb.DynamoDB({
-      region: "localhost",
-      endpoint: "http://localhost:8000",
-    });
   } else {
     ddb = new dynamoose.aws.ddb.DynamoDB();
   }
@@ -97,8 +92,6 @@ export const handler = async (
 
       result = await todos.save();
     } else if (event.httpMethod === "GET") {
-
-
       result = await Todos.get(event.pathParameters?.userId ?? "");
     }
   } catch (error) {
