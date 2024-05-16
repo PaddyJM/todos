@@ -3,11 +3,17 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
-import useTodosStore from "../stores/todosStore";
+import { useEffect, useState } from "react";
 
 function AppContainer() {
-  const { isLoading, isAuthenticated, error, loginWithRedirect, user } =
-    useAuth0();
+  const {
+    isLoading,
+    isAuthenticated,
+    error,
+    loginWithRedirect,
+    user,
+    getAccessTokenSilently,
+  } = useAuth0();
 
   const setUser = useUserStore((state) => state.setUser);
 

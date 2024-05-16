@@ -9,10 +9,15 @@ export default class Client {
 
   public async putTodoList(userId: string, todoList: Todo[]): Promise<any> {
     try {
-      return await axios.put(`${this.URL}/todos`, {
-        id: userId,
-        todoList,
-      });
+      return await axios.put(
+        `${this.URL}/todos`,
+        {
+          todoList,
+        },
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
     } catch (error) {
       console.error(error);
       toast.error(
@@ -23,7 +28,7 @@ export default class Client {
 
   public async getTodoList(userId: string): Promise<any> {
     try {
-      return await axios.get(`${this.URL}/todos/${encodeURI(userId)}`);
+      return await axios.get(`${this.URL}/todos`, {headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }});
     } catch (error) {
       console.error(error);
       if ((error as AxiosError).response?.status === 404) {
