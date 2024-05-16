@@ -10,7 +10,6 @@ function AppContainer() {
     useAuth0();
 
   const setUser = useUserStore((state) => state.setUser);
-  const getInitialTodoList = useTodosStore((state) => state.getInitialTodoList);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -21,7 +20,6 @@ function AppContainer() {
 
   if (isAuthenticated && user) {
     setUser(user);
-    getInitialTodoList();
     return (
       <>
         <AppHeader />

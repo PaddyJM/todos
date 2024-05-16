@@ -26,6 +26,10 @@ const useTodosStore = create<TodosStore>(
     getInitialTodoList: async () => {
       const userId = useUserStore.getState().user.sub ?? "";
       const response = await client.getTodoList(userId);
+      if(!response.data.todoList) {
+        set(() => ({ todoList: null }));
+        return;
+      }
       const todoList = response.data.todoList;
       if (todoList && todoList.length > 0) {
         set(() => ({ todoList: response.data.todoList }));

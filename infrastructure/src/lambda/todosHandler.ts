@@ -100,9 +100,10 @@ export const handler = async (
       result = await Todos.get(userId);
 
       if (result === undefined) {
-        result = { id: userId, todoList: [] };
-      } else if (!result.todoList) {
-        throw new Error("Error retrieving todo list");
+        return {
+          statusCode: 404,
+          body: JSON.stringify({ message: "No todo list found" }),
+        };
       }
     }
   } catch (error) {

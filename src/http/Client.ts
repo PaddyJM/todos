@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Todo } from "../types";
 import toast from "react-hot-toast";
 
@@ -26,6 +26,10 @@ export default class Client {
       return await axios.get(`${this.URL}/todos/${encodeURI(userId)}`);
     } catch (error) {
       console.error(error);
+      if ((error as AxiosError).response?.status === 404) {
+        console.log("No todo list found");
+        return { data: { todoList: null } };
+      }
       throw new Error("Error retrieving todo list");
     }
   }

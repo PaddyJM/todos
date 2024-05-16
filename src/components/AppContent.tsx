@@ -26,6 +26,7 @@ function AppContent() {
   let todoList = useTodosStore((state) => state.todoList);
   const filterStatus = useTodosStore((state) => state.filterStatus);
   const setTodos = useTodosStore((state) => state.setTodos);
+  const getInitialTodoList = useTodosStore((state) => state.getInitialTodoList);
 
   const getFilteredTodoList = (todoList: Todo[], status: string) => {
     return todoList.filter((item) => {
@@ -35,6 +36,29 @@ function AppContent() {
       return item.status === filterStatus;
     });
   };
+
+  if (todoList && todoList.length === 0) {
+    getInitialTodoList();
+    return (
+      <>
+        <br />
+        <motion.p variants={child} className={styles.emptyText}>
+          Loading...
+        </motion.p>
+      </>
+    );
+  }
+
+  if (!todoList) {
+    return (
+      <>
+        <br />
+        <motion.p variants={child} className={styles.emptyText}>
+          No Todo List has been added yet
+        </motion.p>
+      </>
+    );
+  }
 
   return (
     <motion.div
