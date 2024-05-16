@@ -42,15 +42,23 @@ export class InfrastructureStack extends cdk.Stack {
       })
     );
 
+    if (!process.env.DOMAIN_NAME) {
+      throw new Error("DOMAIN_NAME must be set in .env");
+    }
+
     const zone = cdk.aws_route53.HostedZone.fromLookup(this, "TodosZone", {
-      domainName: "patrickmorton.co.uk",
+      domainName: process.env.DOMAIN_NAME,
     });
+
+    if (!process.env.CERTIFICATE_ARN) {
+      throw new Error("CERTIFICATE_ARN must be set in .env");
+    }
 
     const certificate =
       cdk.aws_certificatemanager.Certificate.fromCertificateArn(
         this,
         "TodosCertificate",
-        "arn:aws:acm:us-east-1:011624951925:certificate/1d82e3c4-f584-4173-ac53-23fd29656420"
+        process.env.CERTIFICATE_ARN
       );
 
     const responseHeaderPolicy = new cdk.aws_cloudfront.ResponseHeadersPolicy(
