@@ -1,11 +1,40 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as dynamoose from "dynamoose";
 import { z } from "zod";
+import { createRemoteJWKSet, jwtVerify } from "jose";
 
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
   const env = process.env.ENV || "dev";
+
+  const jwt = event.headers?.Authorization?.split(" ")[1];
+
+  if (!jwt) {
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: "Unauthorized" }),
+    };
+  }
+
+  const JWKS = createRemoteJWKSet(
+    new URL(`https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`)
+  );
+
+  let tokenPayload;
+  try {
+    const { payload } = await jwtVerify(jwt, JWKS, {
+      issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+    });
+
+    tokenPayload = payload;
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ message: "Unauthorized" }),
+    };
+  }
 
   let ddb;
   if (env === "dev") {
@@ -70,9 +99,17 @@ export const handler = async (
       tableName: `TodosTable-${env}`,
       create: env === "test" ? true : false,
     });
+
+    const userId = tokenPayload.sub;
+    if (!userId) {
+      return {
+        statusCode: 401,
+        body: JSON.stringify({ message: "Unauthorized" }),
+      };
+    }
+
     if (event.httpMethod === "PUT") {
       const validationSchema = z.object({
-        id: z.string(),
         todoList: z.array(
           z.object({
             id: z.string(),
@@ -83,20 +120,22 @@ export const handler = async (
         ),
       });
 
-      const parsedBody = validationSchema.parse(JSON.parse(event.body ?? "{}"));
+      if (!event.body) {
+        return {
+          statusCode: 400,
+          body: JSON.stringify({ message: "No request body found" }),
+        };
+      }
+
+      const parsedBody = validationSchema.parse(JSON.parse(event.body));
 
       const todos = new Todos({
-        id: parsedBody.id,
+        id: userId,
         todoList: parsedBody.todoList,
       });
 
       result = await todos.save();
     } else if (event.httpMethod === "GET") {
-      const userId = decodeURI(event.pathParameters?.userId ?? "");
-      if (!userId) {
-        throw new Error("userId is required");
-      }
-
       result = await Todos.get(userId);
 
       if (result === undefined) {

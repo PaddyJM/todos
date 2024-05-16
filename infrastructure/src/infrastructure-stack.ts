@@ -3,7 +3,9 @@ import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import path = require("path");
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import { config } from "dotenv";
+
+config({ path: path.resolve(__dirname, "../../.env") });
 
 const env = process.env.ENV || "dev";
 
@@ -128,13 +130,20 @@ export class InfrastructureStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
+    const AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN;
+    if (!AUTH0_DOMAIN) {
+      throw new Error("REACT_APP_AUTH0_DOMAIN must be set in .env");
+    }
+
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, "./lambda/todosHandler.ts"),
       environment: {
         TODOS_TABLE: table.tableName,
         ENV: env,
+        AUTH0_DOMAIN,
       },
+      timeout: cdk.Duration.seconds(7),
     });
 
     const api = new cdk.aws_apigateway.LambdaRestApi(this, `TodosApi-${env}`, {
@@ -150,8 +159,6 @@ export class InfrastructureStack extends cdk.Stack {
 
     const todosResource = api.root.addResource("todos");
     todosResource.addMethod("PUT");
-
-    const userIdParam = todosResource.addResource("{userId}");
-    userIdParam.addMethod("GET");
+    todosResource.addMethod("GET");
   }
 }
