@@ -5,6 +5,7 @@ import TodoItem from "./TodoItem";
 import { Todo } from "../types";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import client from "../http/Client";
 
 const container = {
   hidden: { opacity: 1 },
@@ -26,11 +27,16 @@ const child = {
 
 function AppContent() {
   const { getAccessTokenSilently } = useAuth0();
+  const getInitialTodoList = useTodosStore((state) => state.getInitialTodoList);
+
+  useEffect(() => {
+    client.setTokenGenerator(getAccessTokenSilently);
+    getInitialTodoList();
+  }, [getAccessTokenSilently]);
 
   let todoList = useTodosStore((state) => state.todoList);
   const filterStatus = useTodosStore((state) => state.filterStatus);
   const setTodos = useTodosStore((state) => state.setTodos);
-  const getInitialTodoList = useTodosStore((state) => state.getInitialTodoList);
 
   const getFilteredTodoList = (todoList: Todo[], status: string) => {
     return todoList.filter((item) => {
@@ -40,34 +46,7 @@ function AppContent() {
       return item.status === filterStatus;
     });
   };
-
-  const [token, setToken] = useState(window.localStorage.getItem("token"));
-
-  useEffect(() => {
-    async function getToken() {
-      const token = await getAccessTokenSilently();
-      setToken(token);
-      window.localStorage.setItem("token", token);
-    }
-
-    if (!token) {
-      getToken();
-    }
-  }, []);
-
-  if (!token) {
-    return (
-      <>
-        <br />
-        <motion.p variants={child} className={styles.emptyText}>
-          Loading...
-        </motion.p>
-      </>
-    );
-  }
-
   if (todoList && todoList.length === 0) {
-    getInitialTodoList();
     return (
       <>
         <br />

@@ -3,7 +3,6 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
-import { useEffect, useState } from "react";
 
 function AppContainer() {
   const {
@@ -12,7 +11,6 @@ function AppContainer() {
     error,
     loginWithRedirect,
     user,
-    getAccessTokenSilently,
   } = useAuth0();
 
   const setUser = useUserStore((state) => state.setUser);

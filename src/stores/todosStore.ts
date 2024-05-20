@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { Todo } from "../types";
 import zukeeper from "zukeeper";
-import Client from "../http/Client";
 import useUserStore from "./userStore";
 import toast from "react-hot-toast";
+import client from "../http/Client";
 
 type TodosStore = {
   filterStatus: string;
@@ -15,17 +15,14 @@ type TodosStore = {
   setTodos: (todoList: Todo[]) => void;
   getInitialTodoList: () => void;
 };
-
-const client = new Client();
-
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: [] as Todo[],
     getInitialTodoList: async () => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      const response = await client.getTodoList(userId);
+      
+      const response = await client.getTodoList();
       if(!response.data.todoList) {
         set(() => ({ todoList: null }));
         return;
@@ -60,7 +57,7 @@ const useTodosStore = create<TodosStore>(
 
       window.localStorage.setItem("todoList", JSON.stringify(newTodoListArr));
 
-      const response = await client.putTodoList(userId, newTodoListArr);
+      const response = await client.putTodoList(newTodoListArr);
 
       if (response) {
         toast.success("Task Added Successfully");
@@ -86,7 +83,7 @@ const useTodosStore = create<TodosStore>(
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
-        const response = await client.putTodoList(userId, todoListArr);
+        const response = await client.putTodoList(todoListArr);
         if (response) toast.success("Task Updated successfully");
       }
     },
@@ -109,7 +106,7 @@ const useTodosStore = create<TodosStore>(
             return todo.id !== id;
           }),
         }));
-        const response = await client.putTodoList(userId, todoListArr);
+        const response = await client.putTodoList(todoListArr);
         if (response) toast.success("Todo Deleted Successfully");
       }
     },
@@ -120,7 +117,7 @@ const useTodosStore = create<TodosStore>(
       }
       set(() => ({ todoList }));
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
-      client.putTodoList(userId, todoList);
+      client.putTodoList(todoList);
       toast.success("Todo List Updated Successfully");
     },
   }))

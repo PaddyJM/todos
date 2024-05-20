@@ -1,21 +1,50 @@
 import axios, { AxiosError } from "axios";
 import { Todo } from "../types";
 import toast from "react-hot-toast";
+import { decodeJwt } from "jose";
 
-export default class Client {
+class Client {
+  private static instance: any;
   private URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+  // this function needs to be set inside react component so cannot be set here as this client
+  // is used only in non-react components, hence the definite assignment assertion
+  tokenGenerator!: () => Promise<string>;
 
-  constructor() {}
+  constructor() {
+    Client.instance = axios.create({ baseURL: this.URL });
 
-  public async putTodoList(userId: string, todoList: Todo[]): Promise<any> {
+    Client.instance.interceptors.request.use(
+      async (config: { headers: any }) => {
+        const token = await this.getToken();
+
+        return {
+          ...config,
+          headers: { ...config.headers, Authorization: `Bearer ${token}` },
+        };
+      },
+      (error: any) => {
+        Promise.reject(error);
+      }
+    );
+
+    return this;
+  }
+
+  setTokenGenerator(tokenGenerator: any): this {
+    this.tokenGenerator = tokenGenerator;
+    return this;
+  }
+
+  getToken() {
+    return this.tokenGenerator();
+  }
+
+  public async putTodoList(todoList: Todo[]): Promise<any> {
     try {
-      return await axios.put(
+      return await Client.instance.put(
         `${this.URL}/todos`,
         {
           todoList,
-        },
-        {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
     } catch (error) {
@@ -26,9 +55,9 @@ export default class Client {
     }
   }
 
-  public async getTodoList(userId: string): Promise<any> {
+  public async getTodoList(): Promise<any> {
     try {
-      return await axios.get(`${this.URL}/todos`, {headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }});
+      return await Client.instance.get(`${this.URL}/todos`);
     } catch (error) {
       console.error(error);
       if ((error as AxiosError).response?.status === 404) {
@@ -39,3 +68,5 @@ export default class Client {
     }
   }
 }
+
+export default new Client();
