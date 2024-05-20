@@ -62,7 +62,7 @@ class Client {
       console.error(error);
       if ((error as AxiosError).response?.status === 404) {
         console.log("No todo list found");
-        return { data: { todoList: null } };
+        return { data: { todoList: [] } };
       }
       throw new Error("Error retrieving todo list");
     }

@@ -51,7 +51,7 @@ function AppContent() {
       <>
         <br />
         <motion.p variants={child} className={styles.emptyText}>
-          Loading...
+          There are no todos; please add some
         </motion.p>
       </>
     );
@@ -62,7 +62,7 @@ function AppContent() {
       <>
         <br />
         <motion.p variants={child} className={styles.emptyText}>
-          No Todo List has been added yet
+          Loading...
         </motion.p>
       </>
     );

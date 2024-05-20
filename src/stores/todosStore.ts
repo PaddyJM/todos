@@ -8,7 +8,7 @@ import client from "../http/Client";
 type TodosStore = {
   filterStatus: string;
   setFilterStatus: (filterStatus: string) => void;
-  todoList: Todo[];
+  todoList: Todo[] | null;
   addTodo: (todo: Todo) => void;
   updateTodo: (todo: Todo) => void;
   deleteTodo: (id: string) => void;
@@ -19,7 +19,7 @@ const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
-    todoList: [] as Todo[],
+    todoList: null,
     getInitialTodoList: async () => {
       
       const response = await client.getTodoList();
