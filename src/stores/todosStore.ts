@@ -49,7 +49,7 @@ const useTodosStore = create<TodosStore>(
         console.error(error);
         toast.error("Error adding todo");
       }
-      const newTodoListArr = todoListArr ? [...todoListArr, todo] : [todo];
+      const newTodoListArr = todoListArr ? [todo, ...todoListArr] : [todo];
 
       set(() => ({
         todoList: newTodoListArr,
