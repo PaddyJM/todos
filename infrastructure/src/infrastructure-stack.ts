@@ -5,9 +5,10 @@ import { Construct } from "constructs";
 import path = require("path");
 import { config } from "dotenv";
 
-config({ path: path.resolve(__dirname, "../../.env") });
-
 const env = process.env.ENV || "dev";
+config({
+  path: path.resolve(__dirname, `../../.env${env === "dev" ? "" : `.${env}`}`),
+});
 
 export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
