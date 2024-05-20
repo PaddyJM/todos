@@ -3,6 +3,11 @@ import * as dynamoose from "dynamoose";
 import { z } from "zod";
 import { createRemoteJWKSet, jwtVerify } from "jose";
 
+const DEFAULT_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Credentials": true,
+};
+
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
@@ -13,6 +18,7 @@ export const handler = async (
   if (!jwt) {
     return {
       statusCode: 401,
+      headers: DEFAULT_HEADERS,
       body: JSON.stringify({ message: "Unauthorized" }),
     };
   }
@@ -33,6 +39,7 @@ export const handler = async (
     console.error(error);
     return {
       statusCode: 401,
+      headers: DEFAULT_HEADERS,
       body: JSON.stringify({ message: "Unauthorized" }),
     };
   }
@@ -105,6 +112,7 @@ export const handler = async (
     if (!userId) {
       return {
         statusCode: 401,
+        headers: DEFAULT_HEADERS,
         body: JSON.stringify({ message: "Unauthorized" }),
       };
     }
@@ -124,6 +132,7 @@ export const handler = async (
       if (!event.body) {
         return {
           statusCode: 400,
+          headers: DEFAULT_HEADERS,
           body: JSON.stringify({ message: "No request body found" }),
         };
       }
@@ -142,6 +151,7 @@ export const handler = async (
       if (result === undefined) {
         return {
           statusCode: 404,
+          headers: DEFAULT_HEADERS,
           body: JSON.stringify({ message: "No todo list found" }),
         };
       }
@@ -150,16 +160,14 @@ export const handler = async (
     console.error(error);
     return {
       statusCode: 500,
+      headers: DEFAULT_HEADERS,
       body: JSON.stringify(error),
     };
   }
 
   return {
     statusCode: 200,
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Credentials": true,
-    },
+    headers: DEFAULT_HEADERS,
     body: JSON.stringify(result),
   };
 };
