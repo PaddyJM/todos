@@ -2,6 +2,7 @@ import axios, { AxiosError } from "axios";
 import { Todo } from "../types";
 import toast from "react-hot-toast";
 import { decodeJwt } from "jose";
+import Cookies from "js-cookie";
 
 class Client {
   private static instance: any;
@@ -15,7 +16,17 @@ class Client {
 
     Client.instance.interceptors.request.use(
       async (config: { headers: any }) => {
-        const token = await this.getToken();
+        let token;
+
+        token = Cookies.get("token");
+        if (!token) token = await this.getToken();
+
+        const tokenExpiry = decodeJwt(token).exp;
+        if (!tokenExpiry) throw new Error("Token expiry not found");
+
+        if (Date.now() >= tokenExpiry * 1000) token = await this.getToken();
+
+        Cookies.set("token", token);
 
         return {
           ...config,
@@ -41,12 +52,9 @@ class Client {
 
   public async putTodoList(todoList: Todo[]): Promise<any> {
     try {
-      return await Client.instance.put(
-        `${this.URL}/todos`,
-        {
-          todoList,
-        }
-      );
+      return await Client.instance.put(`${this.URL}/todos`, {
+        todoList,
+      });
     } catch (error) {
       console.error(error);
       toast.error(
