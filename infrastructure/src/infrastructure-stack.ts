@@ -9,8 +9,6 @@ config({ path: path.resolve(__dirname, "../../.env") });
 
 const env = process.env.ENV || "dev";
 
-const DOMAIN_NAME = "todos.patrickmorton.co.uk";
-
 export class InfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -112,7 +110,7 @@ export class InfrastructureStack extends cdk.Stack {
       "CloudFrontDistribution",
       {
         certificate: certificate,
-        domainNames: [DOMAIN_NAME],
+        domainNames: [`todos.${process.env.DOMAIN_NAME}`],
         defaultRootObject: "index.html",
         defaultBehavior: {
           origin: new cdk.aws_cloudfront_origins.S3Origin(bucket, {
