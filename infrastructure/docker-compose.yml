@@ -11,6 +11,10 @@ services:
    volumes:
      - "./docker/dynamodb:/home/dynamodblocal/data"
    working_dir: /home/dynamodblocal
+   deploy:
+    resources:
+      limits:
+        memory: 128M
 
 networks:
   todos:
