@@ -2,8 +2,7 @@ import { AnimatePresence, Reorder, motion } from "framer-motion";
 import useTodosStore from "../stores/todosStore";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
-import { Todo } from "../types";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import client from "../http/Client";
 
@@ -35,7 +34,6 @@ function AppContent() {
   }, [getAccessTokenSilently]);
 
   let todoList = useTodosStore((state) => state.todoList);
-  const filterStatus = useTodosStore((state) => state.filterStatus);
   const setTodos = useTodosStore((state) => state.setTodos);
 
   if (todoList && todoList.length === 0) {
