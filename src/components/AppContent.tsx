@@ -38,14 +38,6 @@ function AppContent() {
   const filterStatus = useTodosStore((state) => state.filterStatus);
   const setTodos = useTodosStore((state) => state.setTodos);
 
-  const getFilteredTodoList = (todoList: Todo[], status: string) => {
-    return todoList.filter((item) => {
-      if (status === "all") {
-        return true;
-      }
-      return item.status === filterStatus;
-    });
-  };
   if (todoList && todoList.length === 0) {
     return (
       <>
@@ -78,7 +70,7 @@ function AppContent() {
       <AnimatePresence>
         {todoList && todoList.length > 0 ? (
           <Reorder.Group axis="y" values={todoList} onReorder={setTodos}>
-            {getFilteredTodoList(todoList, filterStatus).map((todo) => (
+            {todoList.map((todo) => (
               <Reorder.Item key={todo.id} value={todo}>
                 <TodoItem key={todo.id} todo={todo} />
               </Reorder.Item>

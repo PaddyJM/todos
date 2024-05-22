@@ -25,17 +25,6 @@ function AppHeader() {
       >
         Add Task
       </Button>
-      <SelectButton
-        id="status"
-        onChange={(e) => {
-          UpdateFilter(e);
-        }}
-        value={filterStatus}
-      >
-        <option value="all">All</option>
-        <option value="incomplete">Incomplete</option>
-        <option value="complete">Completed</option>
-      </SelectButton>
       <Button type="button" variant="primary" onClick={() => logout()}>
         Log out
       </Button>
