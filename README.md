@@ -24,3 +24,27 @@ Click the following link to see a production deployment of it:
 Here is a diagram of the project architecture:
 
 ![](./architecture.png)
+
+## Local development
+
+The front-end of the application (the static website created using React) can be built and run using the command:
+
+```
+npm run dev
+```
+
+NOTE: by default this will run on localhost port 3000; this can be changed by setting the `LOCAL_DEV_PORT` envrionment variable in the `.env` file.
+
+The back-end of the application (the API consisting of API Gateway, Lambda and DynamoDB) can deployed locally. This relies on the user having the AWS SAM CLI installed (SAM is a different framework to CDK, however it can still use CDK generated cloudformation templates to build local APIs). 
+
+To install the AWS SAM CLI follow the instructions ![here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
+
+NOTE: the port to run the API on also needs to be set locally in the `LOCAL_API_PORT` variable in the `.env` file. 
+
+The back end API can then be spun up by running the following command:
+
+```
+npm run deploy:api:dev
+```
+
+TODO: find a solution to bypass auth 

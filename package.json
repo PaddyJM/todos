@@ -22,14 +22,14 @@
   },
   "scripts": {
     "postinstall": "cd ./infrastructure && npm install",
-    "dev": "PORT=3001 react-scripts start",
+    "dev": "PORT=$(grep LOCAL_WEBSITE_PORT .env | cut -d '=' -f2) react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
     "deploy:prod": "env-cmd -f .env.prod npm run build && cd ./infrastructure && ENV=prod npx cdk deploy && cd .. && aws cloudfront create-invalidation --distribution-id $(grep CLOUDFRONT_DISTRIBUTION_ID .env.prod | cut -d '=' -f2) --paths '/*'",
     "deploy:db:dev": "cd infrastructure/ && docker compose up -d && scripts/create-table.sh",
-    "deploy:api:dev": "npm run deploy:db:dev && cd infrastructure/ && ENV=dev npx cdk synth && sam local start-api -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image && cd ../"
+    "deploy:api:dev": "npm run deploy:db:dev && cd infrastructure/ && ENV=dev npx cdk synth && sam local start-api -p $(grep LOCAL_API_PORT ../.env | cut -d '=' -f2) -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image && cd ../"
   },
   "eslintConfig": {
     "extends": [
