@@ -117,8 +117,6 @@ const useTodosStore = create<TodosStore>(
       }
       set(() => ({ todoList }));
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
-      client.putTodoList(todoList);
-      toast.success("Todo List Updated Successfully");
     },
   }))
 );

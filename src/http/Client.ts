@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 
 class Client {
   private static instance: any;
-  private URL = process.env.REACT_APP_API_URL || "http://localhost:3000";
+  public URL = process.env.REACT_APP_API_URL ?? "http://localhost:3000";
   // this function needs to be set inside react component so cannot be set here as this client
   // is used only in non-react components, hence the definite assignment assertion
   tokenGenerator!: () => Promise<string>;
@@ -52,9 +52,12 @@ class Client {
 
   public async putTodoList(todoList: Todo[]): Promise<any> {
     try {
-      return await Client.instance.put(`${this.URL}/todos`, {
+      const toastId = toast.loading("Saving todo list...");
+      const response = await Client.instance.put(`${this.URL}/todos`, {
         todoList,
       });
+      toast.success("Todo list updated", { id: toastId });
+      return response
     } catch (error) {
       console.error(error);
       toast.error(
