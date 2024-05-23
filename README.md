@@ -11,7 +11,7 @@ This is a complete application with:
 - Front end (React, S3)
 - Back end (API Gateway, Lambda)
 - Database (DynamoDB)
-- User authentication (Auth0)
+- User authentication and authorisation (Auth0)
 - Content Delivery Network (Cloudfront)
 - Custom DNS (Route 53, AWS Certificate Manager)
 
@@ -77,4 +77,10 @@ The deployment will not create a Route53 domain or DNS certificate Amazon Certif
 ```
 DOMAIN_NAME=todos.patrickmorton.co.uk
 CERTIFICATE_ARN=arn:aws:acm:Region:444455556666:certificate/certificate_ID
+```
+
+When deployed, an endpoint for the API will be generated and output in the terminal. This endpoint will need to be set to the following environment variables in `.env.prod` and the deployment process run again:
+
+```
+REACT_APP_API_URL=https://example.execute-api.eu-west-2.amazonaws.com/prod
 ```
