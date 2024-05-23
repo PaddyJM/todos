@@ -3,7 +3,6 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
-import { set } from "date-fns";
 
 function AppContainer() {
   const isAuth = process.env.REACT_APP_AUTH ?? "true";
