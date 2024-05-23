@@ -6,7 +6,9 @@ import Cookies from "js-cookie";
 
 class Client {
   private static instance: any;
-  public URL = process.env.REACT_APP_API_URL ?? "http://localhost:3000";
+  private URL = process.env.REACT_APP_API_URL ?? "http://localhost:3000";
+  isAuth = process.env.REACT_APP_AUTH ?? "true";
+
   // this function needs to be set inside react component so cannot be set here as this client
   // is used only in non-react components, hence the definite assignment assertion
   tokenGenerator!: () => Promise<string>;
@@ -14,6 +16,8 @@ class Client {
   constructor() {
     Client.instance = axios.create({ baseURL: this.URL });
 
+    if(this.isAuth === "false") return;
+    
     Client.instance.interceptors.request.use(
       async (config: { headers: any }) => {
         let token;

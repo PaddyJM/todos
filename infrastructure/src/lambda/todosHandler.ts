@@ -11,37 +11,43 @@ const DEFAULT_HEADERS = {
 export const handler = async (
   event: APIGatewayProxyEvent
 ): Promise<APIGatewayProxyResult> => {
-  const env = process.env.ENV || "dev";
-
-  const jwt = event.headers?.Authorization?.split(" ")[1];
-
-  if (!jwt) {
-    return {
-      statusCode: 401,
-      headers: DEFAULT_HEADERS,
-      body: JSON.stringify({ message: "Unauthorized" }),
-    };
-  }
-
-  const JWKS = createRemoteJWKSet(
-    new URL(`https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`)
-  );
+  const env = process.env.ENV ?? "dev";
+  const isAuth = process.env.AUTH ?? "true";
 
   let tokenPayload;
-  try {
-    const { payload } = await jwtVerify(jwt, JWKS, {
-      issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-      audience: process.env.AUTH0_AUDIENCE,
-    });
 
-    tokenPayload = payload;
-  } catch (error) {
-    console.error(error);
-    return {
-      statusCode: 401,
-      headers: DEFAULT_HEADERS,
-      body: JSON.stringify({ message: "Unauthorized" }),
-    };
+  if (isAuth === "true") {
+    const jwt = event.headers?.Authorization?.split(" ")[1];
+
+    if (!jwt) {
+      return {
+        statusCode: 401,
+        headers: DEFAULT_HEADERS,
+        body: JSON.stringify({ message: "Unauthorized" }),
+      };
+    }
+  
+    const JWKS = createRemoteJWKSet(
+      new URL(`https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`)
+    );
+
+    try {
+      const { payload } = await jwtVerify(jwt, JWKS, {
+        issuer: `https://${process.env.AUTH0_DOMAIN}/`,
+        audience: process.env.AUTH0_AUDIENCE,
+      });
+  
+      tokenPayload = payload;
+    } catch (error) {
+      console.error(error);
+      return {
+        statusCode: 401,
+        headers: DEFAULT_HEADERS,
+        body: JSON.stringify({ message: "Unauthorized" }),
+      };
+    }
+  } else {
+    tokenPayload = { sub: "test" };
   }
 
   let ddb;

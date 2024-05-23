@@ -5,7 +5,7 @@ import { Construct } from "constructs";
 import path = require("path");
 import { config } from "dotenv";
 
-const env = process.env.ENV || "dev";
+const env = process.env.ENV ?? "dev";
 config({
   path: path.resolve(__dirname, `../../.env${env === "dev" ? "" : `.${env}`}`),
 });
@@ -142,6 +142,11 @@ export class InfrastructureStack extends cdk.Stack {
       throw new Error("REACT_APP_AUTH0_DOMAIN must be set in .env");
     }
 
+    const AUTH = process.env.REACT_APP_AUTH ?? "true";
+    if (AUTH === "false" && env === "prod") {
+      throw new Error("AUTH must be set to true in production");
+    }
+
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, "./lambda/todosHandler.ts"),
@@ -149,6 +154,7 @@ export class InfrastructureStack extends cdk.Stack {
         TODOS_TABLE: table.tableName,
         ENV: env,
         AUTH0_DOMAIN,
+        AUTH,
       },
       timeout: cdk.Duration.seconds(7),
     });

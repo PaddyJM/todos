@@ -3,17 +3,25 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
+import { set } from "date-fns";
 
 function AppContainer() {
-  const {
-    isLoading,
-    isAuthenticated,
-    error,
-    loginWithRedirect,
-    user,
-  } = useAuth0();
+  const isAuth = process.env.REACT_APP_AUTH ?? "true";
 
   const setUser = useUserStore((state) => state.setUser);
+
+  const { isLoading, isAuthenticated, error, loginWithRedirect, user } =
+    useAuth0();
+
+  if (isAuth === "false") {
+    setUser({ sub: "test" });
+    return (
+      <>
+        <AppHeader />
+        <AppContent />
+      </>
+    );
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -31,6 +39,7 @@ function AppContainer() {
       </>
     );
   }
+
   return (
     <div>
       <Button
