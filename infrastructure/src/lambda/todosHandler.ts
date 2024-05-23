@@ -1,7 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as dynamoose from "dynamoose";
-import { z } from "zod";
 import { createRemoteJWKSet, jwtVerify } from "jose";
+import todosRequestValidationSchema from "./schemas/todosRequestValidationSchema";
+import todosDatabaseSchema from "./schemas/todosDatabaseSchema";
 
 const DEFAULT_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -62,54 +63,9 @@ export const handler = async (
 
   dynamoose.aws.ddb.set(ddb);
 
-  const schema = new dynamoose.Schema(
-    {
-      id: String,
-      todoList: {
-        type: Array,
-        schema: [
-          {
-            type: Object,
-            schema: {
-              id: String,
-              title: String,
-              status: String,
-              time: String,
-            },
-          },
-        ],
-      },
-      updated_at: String,
-    },
-    {
-      timestamps: {
-        createdAt: {
-          created_at: {
-            type: {
-              value: Date,
-              settings: {
-                storage: "iso",
-              },
-            },
-          },
-        },
-        updatedAt: {
-          updated: {
-            type: {
-              value: Date,
-              settings: {
-                storage: "iso",
-              },
-            },
-          },
-        },
-      },
-    }
-  );
-
   let result;
   try {
-    const Todos = dynamoose.model("Todos", schema, {
+    const Todos = dynamoose.model("Todos", todosDatabaseSchema, {
       tableName: `TodosTable-${env}`,
       create: env === "test" ? true : false,
     });
@@ -124,17 +80,6 @@ export const handler = async (
     }
 
     if (event.httpMethod === "PUT") {
-      const validationSchema = z.object({
-        todoList: z.array(
-          z.object({
-            id: z.string(),
-            title: z.string(),
-            status: z.string(),
-            time: z.string(),
-          })
-        ),
-      });
-
       if (!event.body) {
         return {
           statusCode: 400,
@@ -143,7 +88,7 @@ export const handler = async (
         };
       }
 
-      const parsedBody = validationSchema.parse(JSON.parse(event.body));
+      const parsedBody = todosRequestValidationSchema.parse(JSON.parse(event.body));
 
       const todos = new Todos({
         id: userId,
