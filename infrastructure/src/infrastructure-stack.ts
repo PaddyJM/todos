@@ -4,6 +4,7 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
 import path = require("path");
 import { config } from "dotenv";
+import { get } from "http";
 
 const env = process.env.ENV ?? "dev";
 config({
@@ -41,23 +42,15 @@ export class InfrastructureStack extends cdk.Stack {
       })
     );
 
-    if (!process.env.DOMAIN_NAME) {
-      throw new Error("DOMAIN_NAME must be set in .env");
-    }
-
     const zone = cdk.aws_route53.HostedZone.fromLookup(this, "TodosZone", {
-      domainName: process.env.DOMAIN_NAME,
+      domainName: getEnvVarOrThrow("DOMAIN_NAME"),
     });
-
-    if (!process.env.CERTIFICATE_ARN) {
-      throw new Error("CERTIFICATE_ARN must be set in .env");
-    }
 
     const certificate =
       cdk.aws_certificatemanager.Certificate.fromCertificateArn(
         this,
         "TodosCertificate",
-        process.env.CERTIFICATE_ARN
+        getEnvVarOrThrow("CERTIFICATE_ARN")
       );
 
     const responseHeaderPolicy = new cdk.aws_cloudfront.ResponseHeadersPolicy(
@@ -111,7 +104,7 @@ export class InfrastructureStack extends cdk.Stack {
       "CloudFrontDistribution",
       {
         certificate: certificate,
-        domainNames: [`todos.${process.env.DOMAIN_NAME}`],
+        domainNames: [`todos.${getEnvVarOrThrow("DOMAIN_NAME")}`],
         defaultRootObject: "index.html",
         defaultBehavior: {
           origin: new cdk.aws_cloudfront_origins.S3Origin(bucket, {
@@ -137,24 +130,14 @@ export class InfrastructureStack extends cdk.Stack {
       removalPolicy: cdk.RemovalPolicy.RETAIN,
     });
 
-    const AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN;
-    if (!AUTH0_DOMAIN) {
-      throw new Error("REACT_APP_AUTH0_DOMAIN must be set in .env");
-    }
-
-    const AUTH = process.env.REACT_APP_AUTH ?? "true";
-    if (AUTH === "false" && env === "prod") {
-      throw new Error("AUTH must be set to true in production");
-    }
-
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, "./lambda/todosHandler.ts"),
       environment: {
         TODOS_TABLE: table.tableName,
         ENV: env,
-        AUTH0_DOMAIN,
-        AUTH,
+        AUTH0_DOMAIN: getEnvVarOrThrow("REACT_APP_AUTH0_DOMAIN"),
+        AUTH: process.env.REACT_APP_AUTH ?? "true",
       },
       timeout: cdk.Duration.seconds(7),
     });
@@ -175,3 +158,10 @@ export class InfrastructureStack extends cdk.Stack {
     todosResource.addMethod("GET");
   }
 }
+
+const getEnvVarOrThrow = (name: string): string => {
+  const value = process.env[name];
+  if (!value) throw new Error(`${name} has no value set in .env.${env}`);
+
+  return value;
+};
