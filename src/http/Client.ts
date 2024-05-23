@@ -52,11 +52,9 @@ class Client {
 
   public async putTodoList(todoList: Todo[]): Promise<any> {
     try {
-      const toastId = toast.loading("Saving todo list...");
       const response = await Client.instance.put(`${this.URL}/todos`, {
         todoList,
       });
-      toast.success("Todo list updated", { id: toastId });
       return response
     } catch (error) {
       console.error(error);
