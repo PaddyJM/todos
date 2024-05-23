@@ -50,6 +50,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                 styles.todoText,
                 todo.status === "complete" && styles["todoText--completed"],
               ])}
+              style={{wordBreak: 'break-word'}}
             >
               {todo.title}
             </p>
