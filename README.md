@@ -8,7 +8,7 @@ A complete todo application with all features and IaC (Infrastructure as Code) f
 
 This is a complete application with:
 
-- Front end (React, S3)
+- Front end (React, Framer Motion, S3)
 - Back end (API Gateway, Lambda)
 - Database (DynamoDB)
 - User authentication and authorisation (Auth0)
@@ -18,6 +18,17 @@ This is a complete application with:
 Click the following link to see a production deployment of it:
 
 [todos.patrickmorton.co.uk](https://todos.patrickmorton.co.uk)
+
+## Features
+
+This a production application with authentication via Auth0 that enables users to securely use the application, which will store todos in dynamodb. Users can do the following actions with todos:
+
+- create
+- update
+- delete
+- reorder
+
+The reordering animation leverages the Framer Motion react library, and uses a debounced function that will save to the back end when no more changes are detected after a second.
 
 ## Architecture
 
