@@ -21,13 +21,12 @@ const useTodosStore = create<TodosStore>(
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: null,
     getInitialTodoList: async () => {
-      
       const response = await client.getTodoList();
-      if(!response.data.todoList) {
+      const todoList = response.data.todoList;
+      if(!todoList) {
         set(() => ({ todoList: null }));
         return;
       }
-      const todoList = response.data.todoList;
       if (todoList && todoList.length > 0) {
         set(() => ({ todoList: response.data.todoList }));
         window.localStorage.setItem("todoList", JSON.stringify(todoList));
