@@ -1,8 +1,8 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import * as dynamoose from "dynamoose";
-import { createRemoteJWKSet, jwtVerify } from "jose";
 import todosRequestValidationSchema from "./schemas/todosRequestValidationSchema";
 import todosDatabaseSchema from "./schemas/todosDatabaseSchema";
+import { validateToken } from "./auth0/validateToken";
 
 const DEFAULT_HEADERS = {
   "Access-Control-Allow-Origin": "*",
@@ -27,17 +27,11 @@ export const handler = async (
         body: JSON.stringify({ message: "Unauthorized" }),
       };
     }
-  
-    const JWKS = createRemoteJWKSet(
-      new URL(`https://${process.env.AUTH0_DOMAIN}/.well-known/jwks.json`)
-    );
 
     try {
-      const { payload } = await jwtVerify(jwt, JWKS, {
-        issuer: `https://${process.env.AUTH0_DOMAIN}/`,
-        audience: process.env.AUTH0_AUDIENCE,
-      });
-  
+      // deployment will throw if AUTH0_DOMAIN is not set
+      const { payload } = await validateToken(jwt, process.env.AUTH0_DOMAIN!);
+
       tokenPayload = payload;
     } catch (error) {
       console.error(error);
@@ -70,8 +64,7 @@ export const handler = async (
       create: env === "test" ? true : false,
     });
 
-    const userId = tokenPayload.sub;
-    if (!userId) {
+    if (!tokenPayload.sub) {
       return {
         statusCode: 401,
         headers: DEFAULT_HEADERS,
@@ -79,6 +72,8 @@ export const handler = async (
       };
     }
 
+    const userId = tokenPayload.sub;
+    
     if (event.httpMethod === "PUT") {
       if (!event.body) {
         return {
@@ -88,7 +83,9 @@ export const handler = async (
         };
       }
 
-      const parsedBody = todosRequestValidationSchema.parse(JSON.parse(event.body));
+      const parsedBody = todosRequestValidationSchema.parse(
+        JSON.parse(event.body)
+      );
 
       const todos = new Todos({
         id: userId,
@@ -122,3 +119,5 @@ export const handler = async (
     body: JSON.stringify(result),
   };
 };
+
+
