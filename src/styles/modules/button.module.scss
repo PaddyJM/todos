@@ -29,3 +29,10 @@
 	background-color: var(--bg-3);
 	color: var(--black-1);
 }
+
+.button--center {
+	background-color: var(--primaryPurple);
+	color: var(--white);
+  display: block;
+  margin: 0 auto;
+}

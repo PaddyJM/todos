@@ -5,9 +5,10 @@ import { getClasses } from "../utils/getClasses";
 const buttonTypes = {
   primary: "primary",
   secondary: "secondary",
+  center: "center",
 };
 
-function Button({ type, variant = "primary", children, ...rest }: { type: "submit" | "button", variant?: "primary" | "secondary", children: React.ReactNode, onClick?: () => void}) {
+function Button({ type, variant = "primary", children, ...rest }: { type: "submit" | "button", variant?: "primary" | "secondary" | "center", children: React.ReactNode, onClick?: () => void}) {
   return (
     <button
       type={type === "submit" ? "submit" : "button"}
