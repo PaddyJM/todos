@@ -1,70 +1,97 @@
-# Getting Started with Create React App
+# React Todo App.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A complete todo application with all features and IaC (Infrastructure as Code) for deployment into serverless architecture hosted in AWS, using Auth0 as the provider for OAuth 2.0 authorization.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Project Description
 
-### `npm start`
+This is a complete application with:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- Front end (React, Framer Motion, S3)
+- Back end (API Gateway, Lambda)
+- Database (DynamoDB)
+- User authentication and authorisation (Auth0)
+- Content Delivery Network (Cloudfront)
+- Custom DNS (Route 53, AWS Certificate Manager)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Click the following link to see a production deployment of it:
 
-### `npm test`
+[todos.patrickmorton.co.uk](https://todos.patrickmorton.co.uk)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Features
 
-### `npm run build`
+This a production application with authentication via Auth0 that enables users to securely use the application, which will store todos in dynamodb. Users can do the following actions with todos:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- create
+- update
+- delete
+- reorder
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The reordering animation leverages the Framer Motion react library, and uses a debounced function that will save to the back end when no more changes are detected after a second.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Architecture
 
-### `npm run eject`
+Here is a diagram of the project architecture:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+![](./architecture.png)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Local development
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Auth
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+It is possible to run the application in the local environment with or without auth (authentication + authorisation). In order to run without, set the following environment variable in the `.env` file to bypass auth in the front and back in infrastructure:
 
-## Learn More
+```
+REACT_APP_AUTH=false
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+If you wish to run the application with auth locally, you will need to ![create an application in Auth0](https://auth0.com/docs/get-started/auth0-overview/create-applications) and also ![register an API](https://auth0.com/docs/get-started/auth0-overview/set-up-apis). When done, the following environment variables need to be set in `.env`:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+REACT_APP_AUTH0_DOMAIN=dev-example.us.auth0.com
+REACT_APP_AUTH0_CLIENT_ID=somehash
+REACT_APP_AUTH0_AUDIENCE=http://localhost:[FRONT_END_PORT]
+```
 
-### Code Splitting
+### Front-end
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The front-end of the application (the static website created using React) can be built and run using the command:
 
-### Analyzing the Bundle Size
+```
+npm run dev
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+NOTE: by default this will run on localhost port 3000; this can be changed by setting the `LOCAL_DEV_PORT` envrionment variable in the `.env` file.
 
-### Making a Progressive Web App
+### Back-end
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+The back-end of the application (the API consisting of API Gateway, Lambda and DynamoDB) can deployed locally. This relies on the user having the AWS SAM CLI installed (SAM is a different framework to CDK, which is used to deploy the application into AWS, however it can still use CDK generated cloudformation templates to build local APIs). 
 
-### Advanced Configuration
+To install the AWS SAM CLI follow the instructions ![here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
+The back end API can then be spun up by running the following command:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```
+npm run deploy:api:dev
+```
 
-### `npm run build` fails to minify
+NOTE: the port to run the API on also needs to be set locally in the `LOCAL_API_PORT` variable in the `.env` file. 
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Deployment
+
+The framework used to deploy the application is AWS CDK. An AWS account and programmatic access configured locally for the target account is required. See steps 1 & 2 of ![this guide](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth) for more information on how to set this up. 
+
+The deployment will not create a Route53 domain or DNS certificate Amazon Certificate Manager, as both of these take a while to create and generally do not change so it makes sense to create them manually and reference them in the stack. To reference them add the following environment variables to `.env.prod`
+
+```
+DOMAIN_NAME=todos.patrickmorton.co.uk
+CERTIFICATE_ARN=arn:aws:acm:Region:444455556666:certificate/certificate_ID
+```
+
+When deployed, an endpoint for the API will be generated and output in the terminal. This endpoint will need to be set to the following environment variables in `.env.prod` and the deployment process run again:
+
+```
+REACT_APP_API_URL=https://example.execute-api.eu-west-2.amazonaws.com/prod
+```
