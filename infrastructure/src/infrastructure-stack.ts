@@ -2,9 +2,8 @@ import * as cdk from "aws-cdk-lib";
 import { ViewerProtocolPolicy } from "aws-cdk-lib/aws-cloudfront";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Construct } from "constructs";
-import path = require("path");
+import path from "path";
 import { config } from "dotenv";
-import { get } from "http";
 
 const env = process.env.ENV ?? "dev";
 config({
