@@ -41,10 +41,6 @@ export class InfrastructureStack extends cdk.Stack {
       })
     );
 
-    const zone = cdk.aws_route53.HostedZone.fromLookup(this, "TodosZone", {
-      domainName: getEnvVarOrThrow("DOMAIN_NAME"),
-    });
-
     const certificate =
       cdk.aws_certificatemanager.Certificate.fromCertificateArn(
         this,
@@ -115,13 +111,19 @@ export class InfrastructureStack extends cdk.Stack {
       }
     );
 
-    new cdk.aws_route53.ARecord(this, "ARecord", {
-      recordName: "todos",
-      target: cdk.aws_route53.RecordTarget.fromAlias(
-        new cdk.aws_route53_targets.CloudFrontTarget(cloudfrontDistribution)
-      ),
-      zone,
-    });
+    if (env === "prod") {
+      const zone = cdk.aws_route53.HostedZone.fromLookup(this, "TodosZone", {
+        domainName: getEnvVarOrThrow("DOMAIN_NAME"),
+      });
+
+      new cdk.aws_route53.ARecord(this, "ARecord", {
+        recordName: "todos",
+        target: cdk.aws_route53.RecordTarget.fromAlias(
+          new cdk.aws_route53_targets.CloudFrontTarget(cloudfrontDistribution)
+        ),
+        zone,
+      });
+    }
 
     const table = new cdk.aws_dynamodb.Table(this, `TodosTable-${env}`, {
       partitionKey: { name: "id", type: cdk.aws_dynamodb.AttributeType.STRING },
