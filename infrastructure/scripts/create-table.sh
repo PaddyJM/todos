@@ -1,4 +1,4 @@
-if aws dynamodb describe-table --table-name TodosTable-dev --endpoint-url http://localhost:8000 > /dev/null
+if aws dynamodb describe-table --table-name TodosTable-dev --endpoint-url http://localhost:8000 --region us-east-1 > /dev/null
 then
   echo "Table already exists"
 else
@@ -11,5 +11,6 @@ else
       AttributeName=id,KeyType=HASH \
     --provisioned-throughput \
       ReadCapacityUnits=10,WriteCapacityUnits=10 \
-    --endpoint-url http://localhost:8000
+    --endpoint-url http://localhost:8000 \
+    --region us-east-1
 fi

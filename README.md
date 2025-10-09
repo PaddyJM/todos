@@ -38,6 +38,14 @@ Here is a diagram of the project architecture:
 
 ## Local development
 
+### Environment Variables
+
+Run 
+
+```
+cp .env.dev.example .env
+```
+
 ### Auth
 
 It is possible to run the application in the local environment with or without auth (authentication + authorisation). In order to run without, set the following environment variable in the `.env` file to bypass auth in the front and back in infrastructure:
@@ -66,15 +74,16 @@ NOTE: by default this will run on localhost port 3000; this can be changed by se
 
 ### Back-end
 
-The back-end of the application (the API consisting of API Gateway, Lambda and DynamoDB) can deployed locally. This relies on the user having the AWS SAM CLI installed (SAM is a different framework to CDK, which is used to deploy the application into AWS, however it can still use CDK generated cloudformation templates to build local APIs). 
+The back-end of the application (the API consisting of API Gateway, Lambda and DynamoDB) can deployed locally. 
 
-To install the AWS SAM CLI follow the instructions ![here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html).
+This relies on the user having the AWS SAM CLI installed, by following the instructions [here](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
 
+(Note: SAM is a different framework to CDK, which is used to deploy the application into AWS, however it can still use CDK generated cloudformation templates to build local APIs). 
 
 The back end API can then be spun up by running the following command:
 
 ```
-npm run deploy:api:dev
+npm run dev:api
 ```
 
 NOTE: the port to run the API on also needs to be set locally in the `LOCAL_API_PORT` variable in the `.env` file. 

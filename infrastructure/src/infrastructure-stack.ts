@@ -134,6 +134,11 @@ export class InfrastructureStack extends cdk.Stack {
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
       entry: path.join(__dirname, "./lambda/todosHandler.ts"),
+      bundling: {
+        esbuildArgs: {
+          "--packages": "bundle",
+        },
+      },
       environment: {
         TODOS_TABLE: table.tableName,
         ENV: env,
