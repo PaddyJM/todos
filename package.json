@@ -23,14 +23,14 @@
   },
   "scripts": {
     "postinstall": "cd ./infrastructure && npm install",
-    "dev": "PORT=$(grep LOCAL_WEBSITE_PORT .env | cut -d '=' -f2) react-scripts start",
+    "dev": "env-cmd -f .env.dev react-scripts start",
     "dev:db": "cd infrastructure/ && docker compose up -d && scripts/create-table.sh",
-    "dev:api": "npm run dev:db && cd infrastructure/ && ENV=dev npx cdk synth && sam local start-api -p $(grep LOCAL_API_PORT ../.env | cut -d '=' -f2) -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image && cd ../",
+    "dev:api": "npm run dev:db && cd infrastructure/ && env-cmd -f ../.env.dev bash -c 'ENV=dev npx cdk synth && sam local start-api -p $LOCAL_API_PORT -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image' && cd ../",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "deploy:prod": "env-cmd -f .env.prod npm run build && cd ./infrastructure && ENV=prod npx cdk deploy && cd .. && aws cloudfront create-invalidation --distribution-id $(grep CLOUDFRONT_DISTRIBUTION_ID .env.prod | cut -d '=' -f2) --paths '/*'"
+    "deploy:prod": "env-cmd -f .env.prod npm run build && cd ./infrastructure && env-cmd -f ../.env.prod bash -c 'ENV=prod npx cdk deploy && cd .. && aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths \"/*\"'"
   },
   "eslintConfig": {
     "extends": [

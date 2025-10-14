@@ -43,7 +43,7 @@ Here is a diagram of the project architecture:
 Run 
 
 ```
-cp .env.dev.example .env
+cp .env.dev.example .env.dev
 ```
 
 ### Auth
@@ -92,7 +92,12 @@ NOTE: the port to run the API on also needs to be set locally in the `LOCAL_API_
 
 The framework used to deploy the application is AWS CDK. An AWS account and programmatic access configured locally for the target account is required. See steps 1 & 2 of ![this guide](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html#getting_started_auth) for more information on how to set this up. 
 
-The deployment will not create a Route53 domain or DNS certificate Amazon Certificate Manager, as both of these take a while to create and generally do not change so it makes sense to create them manually and reference them in the stack. To reference them add the following environment variables to `.env.prod`
+Run the following command to create the env file
+
+```
+cp .env.prod.example .env.prod
+```
+The deployment will not create a Route53 domain or DNS certificate Amazon Certificate Manager, as both of these take a while to create and generally do not change so it makes sense to create them manually and reference them in the stack. When you have created these update the relevant environment vars in `.env.prod` to reference them:
 
 ```
 DOMAIN_NAME=todos.patrickmorton.co.uk
