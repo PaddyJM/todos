@@ -18,6 +18,10 @@
 	@include smallDeviceSize {
 		padding: 1.5rem;
 	}
+
+	ul {
+		list-style: none;
+	}
 }
 .emptyText {
 	// display: inline-block;
