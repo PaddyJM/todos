@@ -1,13 +1,12 @@
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { MdDelete, MdEdit } from "react-icons/md";
 import styles from "../styles/modules/todoItem.module.scss";
 import { getClasses } from "../utils/getClasses";
+import { formatDate } from "../utils/formatDate";
 import CheckButton from "./CheckButton";
 import TodoModal from "./TodoModal";
 import { Todo } from "../types";
 import useTodosStore from "../stores/todosStore";
-import { useAuth0 } from "@auth0/auth0-react";
 
 function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
@@ -50,13 +49,11 @@ function TodoItem({ todo }: { todo: Todo }) {
                 styles.todoText,
                 todo.status === "complete" && styles["todoText--completed"],
               ])}
-              style={{wordBreak: 'break-word'}}
+              style={{ wordBreak: "break-word" }}
             >
               {todo.title}
             </p>
-            <p className={styles.time}>
-              {format(new Date(todo.time), "p, MM/dd/yyyy")}
-            </p>
+            <p className={styles.time}>{formatDate(todo.time)}</p>
           </div>
         </div>
         <div className={styles.todoActions}>

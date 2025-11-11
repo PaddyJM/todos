@@ -3,7 +3,6 @@ import { v4 as uuid } from "uuid";
 import { MdOutlineClose } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
-import { format } from "date-fns";
 import styles from "../styles/modules/modal.module.scss";
 import Button from "./Button";
 import { Todo } from "../types";
@@ -71,12 +70,12 @@ function TodoModal({
           id: uuid(),
           title,
           status,
-          time: format(new Date(), "p, MM/dd/yyyy"),
+          time: new Date().toISOString(),
         });
       }
       if (type === "update") {
         if (todo && (todo.title !== title || todo.status !== status)) {
-          updateTodo( { ...todo, title, status });
+          updateTodo({ ...todo, title, status });
         } else {
           toast.error("No changes made");
           return;
