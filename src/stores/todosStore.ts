@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Todo } from "../types";
+import { Todo, TodoComment } from "../types";
 import zukeeper from "zukeeper";
 import useUserStore from "./userStore";
 import toast from "react-hot-toast";
@@ -14,6 +14,7 @@ type TodosStore = {
   deleteTodo: (id: string) => void;
   setTodos: (todoList: Todo[]) => void;
   getInitialTodoList: () => void;
+  addComment: (todoId: string, comment: string) => void;
 };
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
@@ -23,7 +24,7 @@ const useTodosStore = create<TodosStore>(
     getInitialTodoList: async () => {
       const response = await client.getTodoList();
       const todoList = response.data.todoList;
-      if(!todoList) {
+      if (!todoList) {
         set(() => ({ todoList: null }));
         return;
       }
@@ -74,6 +75,7 @@ const useTodosStore = create<TodosStore>(
           if (todo.id === updatedTodo.id) {
             todo.status = updatedTodo.status;
             todo.title = updatedTodo.title;
+            todo.comments = updatedTodo.comments;
           }
         });
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
@@ -84,6 +86,32 @@ const useTodosStore = create<TodosStore>(
         }));
         const response = await client.putTodoList(todoListArr);
         if (response) toast.success("Task Updated successfully");
+      }
+    },
+    addComment: async (todoId: string, comment: string) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
+      const todoList = window.localStorage.getItem("todoList");
+      if (todoList) {
+        const todoListArr = JSON.parse(todoList);
+        const newComment: TodoComment = {
+          comment,
+          time: new Date().toISOString(),
+        };
+        todoListArr.forEach((todo: Todo) => {
+          if (todo.id === todoId) {
+            todo.comments = todo.comments || [];
+            todo.comments.unshift(newComment);
+          }
+        });
+        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        set(() => ({
+          todoList: todoListArr,
+        }));
+        const response = await client.putTodoList(todoListArr);
+        if (response) toast.success("Comment added successfully");
       }
     },
     deleteTodo: async (id: string) => {
