@@ -30,7 +30,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "format": "prettier --write './**/*.{js,jsx,ts,tsx,css,md,json}'",
-    "deploy:prod": "env-cmd -f .env.prod npm run build && cd ./infrastructure && env-cmd -f ../.env.prod bash -c 'ENV=prod npx cdk deploy && cd .. && aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths \"/*\"'"
+    "deploy:prod": "env-cmd -f .env.prod npm run build && cd ./infrastructure && env-cmd -f ../.env.prod bash -c 'AWS_PROFILE=${AWS_PROFILE} ENV=prod npx cdk deploy && cd .. && aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DISTRIBUTION_ID --paths \"/*\"'"
   },
   "eslintConfig": {
     "extends": [
