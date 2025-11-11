@@ -6,6 +6,7 @@ import {
   MdKeyboardArrowUp,
 } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
+import Linkify from "linkify-react";
 import styles from "../styles/modules/todoItem.module.scss";
 import { getClasses } from "../utils/getClasses";
 import { formatDate } from "../utils/formatDate";
@@ -61,6 +62,12 @@ function TodoItem({ todo }: { todo: Todo }) {
 
   const comments = todo.comments || [];
 
+  const linkifyOptions = {
+    target: "_blank",
+    rel: "noopener noreferrer",
+    defaultProtocol: "https",
+  };
+
   return (
     <>
       <div className={styles.itemWrapper}>
@@ -75,7 +82,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                 ])}
                 style={{ wordBreak: "break-word" }}
               >
-                {todo.title}
+                <Linkify options={linkifyOptions}>{todo.title}</Linkify>
               </p>
               <p className={styles.time}>{formatDate(todo.time)}</p>
             </div>
@@ -144,7 +151,11 @@ function TodoItem({ todo }: { todo: Todo }) {
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
                     <div key={index} className={styles.commentItem}>
-                      <p className={styles.commentText}>{comment.comment}</p>
+                      <p className={styles.commentText}>
+                        <Linkify options={linkifyOptions}>
+                          {comment.comment}
+                        </Linkify>
+                      </p>
                       <p className={styles.commentTime}>
                         {formatDate(comment.time)}
                       </p>
