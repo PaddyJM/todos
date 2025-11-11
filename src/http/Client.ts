@@ -16,8 +16,8 @@ class Client {
   constructor() {
     Client.instance = axios.create({ baseURL: this.URL });
 
-    if(this.isAuth === "false") return;
-    
+    if (this.isAuth === "false") return;
+
     Client.instance.interceptors.request.use(
       async (config: { headers: any }) => {
         let token;
@@ -59,7 +59,7 @@ class Client {
       const response = await Client.instance.put(`${this.URL}/todos`, {
         todoList,
       });
-      return response
+      return response;
     } catch (error) {
       console.error(error);
       toast.error(
@@ -82,4 +82,5 @@ class Client {
   }
 }
 
-export default new Client();
+const client = new Client();
+export default client;

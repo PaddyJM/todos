@@ -34,7 +34,7 @@ function AppContent() {
   useEffect(() => {
     client.setTokenGenerator(getAccessTokenSilently);
     getInitialTodoList();
-  }, [getAccessTokenSilently]);
+  }, [getAccessTokenSilently, getInitialTodoList]);
 
   let todoList = useTodosStore((state) => state.todoList);
   const setTodos = useTodosStore((state) => state.setTodos);
