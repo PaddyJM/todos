@@ -4,6 +4,7 @@ import AppContent from "./AppContent";
 import AppHeader from "./AppHeader";
 import Button from "./Button";
 import useUserStore from "../stores/userStore";
+import styles from "../styles/modules/app.module.scss";
 
 function AppContainer() {
   const isAuth = process.env.REACT_APP_AUTH ?? "true";
@@ -46,9 +47,21 @@ function AppContainer() {
   }
 
   return (
-    <Button type="button" variant="center" onClick={() => loginWithRedirect()}>
-      Log in
-    </Button>
+    <>
+      <h1
+        className={styles.headerTitle}
+        style={{ textAlign: "center", marginBottom: "2rem" }}
+      >
+        TODO List
+      </h1>
+      <Button
+        type="button"
+        variant="center"
+        onClick={() => loginWithRedirect()}
+      >
+        Log in
+      </Button>
+    </>
   );
 }
 
