@@ -61,10 +61,11 @@ class Client {
       });
       return response;
     } catch (error) {
-      console.error(error);
+      console.error("Error syncing todo list:", error);
       toast.error(
         "Error updating todo list; changes have not been saved and may be lost when you leave this browser tab"
       );
+      return null;
     }
   }
 

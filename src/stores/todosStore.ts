@@ -110,7 +110,11 @@ const useTodosStore = create<TodosStore>(
         return todo;
       });
       const response = await syncTodoList(updatedTodoList, set);
-      if (response) toast.success("Comment added successfully");
+      if (response) {
+        toast.success("Comment added successfully");
+      } else {
+        toast.error("Comment saved locally but not synced to server");
+      }
     },
     updateComment: async (
       todoId: string,

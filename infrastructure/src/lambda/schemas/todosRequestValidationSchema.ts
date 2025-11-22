@@ -7,6 +7,14 @@ export default z.object({
       title: z.string(),
       status: z.string(),
       time: z.string(),
+      comments: z
+        .array(
+          z.object({
+            comment: z.string(),
+            time: z.string(),
+          })
+        )
+        .optional(),
     })
   ),
 });

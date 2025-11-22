@@ -13,6 +13,18 @@ export default new dynamoose.Schema(
             title: String,
             status: String,
             time: String,
+            comments: {
+              type: Array,
+              schema: [
+                {
+                  type: Object,
+                  schema: {
+                    comment: String,
+                    time: String,
+                  },
+                },
+              ],
+            },
           },
         },
       ],
