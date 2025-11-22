@@ -7,6 +7,7 @@ interface AutoResizeTextareaProps {
   className?: string;
   autoFocus?: boolean;
   onSubmit?: () => void;
+  disabled?: boolean;
 }
 
 function AutoResizeTextarea({
@@ -16,6 +17,7 @@ function AutoResizeTextarea({
   className,
   autoFocus,
   onSubmit,
+  disabled,
 }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -63,6 +65,7 @@ function AutoResizeTextarea({
       onInput={handleInput}
       onKeyDown={handleKeyDown}
       autoFocus={autoFocus}
+      disabled={disabled}
       rows={1}
     />
   );

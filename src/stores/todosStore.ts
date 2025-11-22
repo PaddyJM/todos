@@ -38,6 +38,7 @@ type TodosStore = {
   filterStatus: string;
   setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[] | null;
+  isInitialLoadComplete: boolean;
   addTodo: (todo: Todo) => Promise<void>;
   updateTodo: (todo: Todo) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
@@ -56,21 +57,25 @@ const useTodosStore = create<TodosStore>(
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: null,
+    isInitialLoadComplete: false,
 
     getInitialTodoList: async () => {
       const response = await client.getTodoList();
       const todoList = response.data.todoList;
 
       if (!todoList) {
-        set(() => ({ todoList: null }));
+        set(() => ({ todoList: null, isInitialLoadComplete: true }));
         return;
       }
 
       if (todoList && todoList.length > 0) {
-        set(() => ({ todoList: response.data.todoList }));
+        set(() => ({
+          todoList: response.data.todoList,
+          isInitialLoadComplete: true,
+        }));
         window.localStorage.setItem("todoList", JSON.stringify(todoList));
       } else {
-        set(() => ({ todoList: [] }));
+        set(() => ({ todoList: [], isInitialLoadComplete: true }));
         window.localStorage.setItem("todoList", JSON.stringify([]));
       }
     },

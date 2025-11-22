@@ -39,7 +39,11 @@ describe("todosStore", () => {
 
     jest.spyOn(console, "error").mockImplementation(() => {});
 
-    useTodosStore.setState({ todoList: null, filterStatus: "all" });
+    useTodosStore.setState({
+      todoList: null,
+      filterStatus: "all",
+      isInitialLoadComplete: false,
+    });
   });
 
   afterEach(() => {
@@ -80,6 +84,7 @@ describe("todosStore", () => {
       await useTodosStore.getState().getInitialTodoList();
 
       expect(useTodosStore.getState().todoList).toBeNull();
+      expect(useTodosStore.getState().isInitialLoadComplete).toBe(true);
       expect(localStorage.setItem).not.toHaveBeenCalled();
     });
 
@@ -92,6 +97,7 @@ describe("todosStore", () => {
       await useTodosStore.getState().getInitialTodoList();
 
       expect(useTodosStore.getState().todoList).toEqual(mockTodos);
+      expect(useTodosStore.getState().isInitialLoadComplete).toBe(true);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "todoList",
         JSON.stringify(mockTodos)
@@ -104,6 +110,7 @@ describe("todosStore", () => {
       await useTodosStore.getState().getInitialTodoList();
 
       expect(useTodosStore.getState().todoList).toEqual([]);
+      expect(useTodosStore.getState().isInitialLoadComplete).toBe(true);
       expect(localStorage.setItem).toHaveBeenCalledWith(
         "todoList",
         JSON.stringify([])

@@ -10,6 +10,10 @@
 	text-transform: capitalize;
 	cursor: pointer;
 	overflow: hidden;
+	&:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
 	&__select {
 		color: var(--black-2);
 		font-family: Poppins;
