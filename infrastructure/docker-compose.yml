@@ -5,7 +5,7 @@ services:
    image: "amazon/dynamodb-local:latest"
    networks: 
      - todos
-   container_name: dynamodb-local
+   container_name: dynamodb-local-todos
    ports:
      - "8000:8000"
    volumes:
