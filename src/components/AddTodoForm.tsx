@@ -26,18 +26,27 @@ function AddTodoForm() {
       });
       setTitle("");
       setStatus("incomplete");
+      const textarea = e.currentTarget.querySelector('textarea');
+      if (textarea) {
+        textarea.style.height = 'auto';
+      }
     }
   };
 
   return (
     <form className={styles.addTodoForm} onSubmit={handleSubmit}>
       <div className={styles.addTodoInputs}>
-        <input
-          type="text"
+        <textarea
           className={styles.addTodoInput}
           placeholder="Add a new todo..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          rows={1}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = 'auto';
+            target.style.height = target.scrollHeight + 'px';
+          }}
         />
         <select
           className={styles.addTodoSelect}

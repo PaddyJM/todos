@@ -173,6 +173,9 @@
   font-size: 1.4rem;
   color: var(--black-2);
   font-family: "Poppins", sans-serif;
+  resize: none;
+  overflow: hidden;
+  min-height: 44px;
   &:focus {
     outline: 2px solid var(--primaryPurple);
   }
@@ -268,6 +271,9 @@
   font-size: 1.4rem;
   color: var(--black-2);
   font-family: "Poppins", sans-serif;
+  resize: none;
+  overflow: hidden;
+  min-height: 44px;
   &:focus {
     outline: 2px solid var(--primaryPurple);
   }

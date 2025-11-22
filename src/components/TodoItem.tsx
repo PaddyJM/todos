@@ -57,6 +57,18 @@ function TodoItem({ todo }: { todo: Todo }) {
     setEditingStatus(todo.status);
   };
 
+  useEffect(() => {
+    if (isEditing) {
+      const textarea = document.querySelector(
+        `.${styles.todoEditInput}`
+      ) as HTMLTextAreaElement;
+      if (textarea) {
+        textarea.style.height = "auto";
+        textarea.style.height = textarea.scrollHeight + "px";
+      }
+    }
+  }, [isEditing]);
+
   const handleSaveEdit = (e: React.FormEvent) => {
     e.preventDefault();
     if (editingTitle.trim() === "") {
@@ -84,6 +96,10 @@ function TodoItem({ todo }: { todo: Todo }) {
     if (commentText.trim()) {
       addComment(todo.id, commentText);
       setCommentText("");
+      const textarea = (e.target as HTMLFormElement).querySelector("textarea");
+      if (textarea) {
+        textarea.style.height = "auto";
+      }
     }
   };
 
@@ -91,6 +107,21 @@ function TodoItem({ todo }: { todo: Todo }) {
     setEditingCommentIndex(index);
     setEditingCommentText(comments[index].comment);
   };
+
+  useEffect(() => {
+    if (editingCommentIndex !== null) {
+      setTimeout(() => {
+        const textareas = document.querySelectorAll(`.${styles.commentInput}`);
+        textareas.forEach((textarea) => {
+          const ta = textarea as HTMLTextAreaElement;
+          if (ta.value === editingCommentText) {
+            ta.style.height = "auto";
+            ta.style.height = ta.scrollHeight + "px";
+          }
+        });
+      }, 0);
+    }
+  }, [editingCommentIndex, editingCommentText]);
 
   const handleUpdateComment = (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,12 +156,17 @@ function TodoItem({ todo }: { todo: Todo }) {
           {isEditing ? (
             <form className={styles.todoEditForm} onSubmit={handleSaveEdit}>
               <div className={styles.todoEditInputs}>
-                <input
-                  type="text"
+                <textarea
                   className={styles.todoEditInput}
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
                   autoFocus
+                  rows={1}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = "auto";
+                    target.style.height = target.scrollHeight + "px";
+                  }}
                 />
                 <select
                   className={styles.todoEditSelect}
@@ -225,12 +261,17 @@ function TodoItem({ todo }: { todo: Todo }) {
                 <h3 className={styles.commentsTitle}>Comments</h3>
               </div>
               <form className={styles.commentForm} onSubmit={handleAddComment}>
-                <input
-                  type="text"
+                <textarea
                   className={styles.commentInput}
                   placeholder="Add a comment..."
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
+                  rows={1}
+                  onInput={(e) => {
+                    const target = e.target as HTMLTextAreaElement;
+                    target.style.height = "auto";
+                    target.style.height = target.scrollHeight + "px";
+                  }}
                 />
                 <div className={styles.commentButton}>
                   <Button type="submit" variant="primary">
@@ -247,14 +288,19 @@ function TodoItem({ todo }: { todo: Todo }) {
                           className={styles.commentEditForm}
                           onSubmit={handleUpdateComment}
                         >
-                          <input
-                            type="text"
+                          <textarea
                             className={styles.commentInput}
                             value={editingCommentText}
                             onChange={(e) =>
                               setEditingCommentText(e.target.value)
                             }
                             autoFocus
+                            rows={1}
+                            onInput={(e) => {
+                              const target = e.target as HTMLTextAreaElement;
+                              target.style.height = "auto";
+                              target.style.height = target.scrollHeight + "px";
+                            }}
                           />
                           <div className={styles.commentEditButtons}>
                             <Button type="submit" variant="primary">
