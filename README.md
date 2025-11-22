@@ -109,3 +109,7 @@ When deployed, an endpoint for the API will be generated and output in the termi
 ```
 REACT_APP_API_URL=https://example.execute-api.eu-west-2.amazonaws.com/prod
 ```
+
+Ensure that you AWS credentials are setup correctly. This could be achieved by exporting the relevant variables directly into your terminal, or by setting an AWS_PROFILE.
+
+To do the latter, ensure your credentials are setup in `~/.aws/credentials` and that you have a profile setup with the same name in `~/.aws/config` targeting the desired region.
