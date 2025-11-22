@@ -5,6 +5,35 @@ import useUserStore from "./userStore";
 import toast from "react-hot-toast";
 import client from "../http/Client";
 
+const validateUser = () => {
+  const userId = useUserStore.getState().user.sub ?? "";
+  if (userId === "") {
+    throw new Error("User id not found");
+  }
+  return userId;
+};
+
+const getTodoListFromStorage = (): Todo[] | null => {
+  const todoList = window.localStorage.getItem("todoList");
+  if (!todoList) return null;
+  try {
+    return JSON.parse(todoList);
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+};
+
+const saveTodoListToStorage = (todoList: Todo[]) => {
+  window.localStorage.setItem("todoList", JSON.stringify(todoList));
+};
+
+const syncTodoList = async (todoList: Todo[], set: any) => {
+  saveTodoListToStorage(todoList);
+  set(() => ({ todoList }));
+  return await client.putTodoList(todoList);
+};
+
 type TodosStore = {
   filterStatus: string;
   setFilterStatus: (filterStatus: string) => void;
@@ -47,175 +76,92 @@ const useTodosStore = create<TodosStore>(
     },
 
     addTodo: async (todo: Todo) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-
-      const todoListString = window.localStorage.getItem("todoList");
-
-      let todoListArr: Todo[] = [];
-      try {
-        todoListArr = JSON.parse(todoListString ?? "{}") as Todo[];
-      } catch (error) {
-        console.error(error);
-        toast.error("Error adding todo");
-      }
-      const newTodoListArr = todoListArr ? [todo, ...todoListArr] : [todo];
-
-      set(() => ({
-        todoList: newTodoListArr,
-      }));
-
-      window.localStorage.setItem("todoList", JSON.stringify(newTodoListArr));
-
-      const response = await client.putTodoList(newTodoListArr);
-
-      if (response) {
-        toast.success("Task Added Successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage() || [];
+      const updatedTodoList = [todo, ...todoList];
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Task Added Successfully");
     },
     updateTodo: async (updatedTodo: Todo) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-
-      const todoList = window.localStorage.getItem("todoList");
-
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo: Todo) => {
-          if (todo.id === updatedTodo.id) {
-            todo.status = updatedTodo.status;
-            todo.title = updatedTodo.title;
-            todo.comments = updatedTodo.comments;
-          }
-        });
-
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-
-        set((state: any) => ({
-          todoList: state.todoList.map((todo: Todo) => {
-            return todo.id === updatedTodo.id ? updatedTodo : todo;
-          }),
-        }));
-
-        const response = await client.putTodoList(todoListArr);
-        if (response) toast.success("Task Updated successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage();
+      if (!todoList) return;
+      const updatedTodoList = todoList.map((todo) =>
+        todo.id === updatedTodo.id ? updatedTodo : todo
+      );
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Task Updated successfully");
     },
     addComment: async (todoId: string, comment: string) => {
-
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-
-      const todoList = window.localStorage.getItem("todoList");
-
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList);
-        const newComment: TodoComment = {
-          comment,
-          time: new Date().toISOString(),
-        };
-        todoListArr.forEach((todo: Todo) => {
-          if (todo.id === todoId) {
-            todo.comments = todo.comments || [];
-            todo.comments.unshift(newComment);
-          }
-        });
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        set(() => ({
-          todoList: todoListArr,
-        }));
-        const response = await client.putTodoList(todoListArr);
-        if (response) toast.success("Comment added successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage();
+      if (!todoList) return;
+      const newComment: TodoComment = {
+        comment,
+        time: new Date().toISOString(),
+      };
+      const updatedTodoList = todoList.map((todo) => {
+        if (todo.id === todoId) {
+          return {
+            ...todo,
+            comments: [newComment, ...(todo.comments || [])],
+          };
+        }
+        return todo;
+      });
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Comment added successfully");
     },
     updateComment: async (
       todoId: string,
       commentIndex: number,
       newComment: string
     ) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-      const todoList = window.localStorage.getItem("todoList");
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo: Todo) => {
-          if (
-            todo.id === todoId &&
-            todo.comments &&
-            todo.comments[commentIndex]
-          ) {
-            todo.comments[commentIndex].comment = newComment;
-          }
-        });
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        set(() => ({
-          todoList: todoListArr,
-        }));
-        const response = await client.putTodoList(todoListArr);
-        if (response) toast.success("Comment updated successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage();
+      if (!todoList) return;
+      const updatedTodoList = todoList.map((todo) => {
+        if (todo.id === todoId && todo.comments?.[commentIndex]) {
+          const updatedComments = [...todo.comments];
+          updatedComments[commentIndex] = {
+            ...updatedComments[commentIndex],
+            comment: newComment,
+          };
+          return { ...todo, comments: updatedComments };
+        }
+        return todo;
+      });
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Comment updated successfully");
     },
     deleteComment: async (todoId: string, commentIndex: number) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-      const todoList = window.localStorage.getItem("todoList");
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo: Todo) => {
-          if (todo.id === todoId && todo.comments) {
-            todo.comments.splice(commentIndex, 1);
-          }
-        });
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        set(() => ({
-          todoList: todoListArr,
-        }));
-        const response = await client.putTodoList(todoListArr);
-        if (response) toast.success("Comment deleted successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage();
+      if (!todoList) return;
+      const updatedTodoList = todoList.map((todo) => {
+        if (todo.id === todoId && todo.comments) {
+          const updatedComments = todo.comments.filter(
+            (_, index) => index !== commentIndex
+          );
+          return { ...todo, comments: updatedComments };
+        }
+        return todo;
+      });
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Comment deleted successfully");
     },
     deleteTodo: async (id: string) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-      const todoList = window.localStorage.getItem("todoList");
-      if (todoList) {
-        const todoListArr = JSON.parse(todoList);
-        todoListArr.forEach((todo: Todo, index: number) => {
-          if (todo.id === id) {
-            todoListArr.splice(index, 1);
-          }
-        });
-        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
-        set((state: any) => ({
-          todoList: state.todoList.filter((todo: Todo) => {
-            return todo.id !== id;
-          }),
-        }));
-        const response = await client.putTodoList(todoListArr);
-        if (response) toast.success("Todo Deleted Successfully");
-      }
+      validateUser();
+      const todoList = getTodoListFromStorage();
+      if (!todoList) return;
+      const updatedTodoList = todoList.filter((todo) => todo.id !== id);
+      const response = await syncTodoList(updatedTodoList, set);
+      if (response) toast.success("Todo Deleted Successfully");
     },
     setTodos: (todoList: Todo[]) => {
-      const userId = useUserStore.getState().user.sub ?? "";
-      if (userId === "") {
-        throw new Error("User id not found");
-      }
-
+      validateUser();
       set(() => ({ todoList }));
-      
-      window.localStorage.setItem("todoList", JSON.stringify(todoList));
+      saveTodoListToStorage(todoList);
     },
   }))
 );
