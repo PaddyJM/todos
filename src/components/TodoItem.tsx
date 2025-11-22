@@ -113,11 +113,7 @@ function TodoItem({ todo }: { todo: Todo }) {
               tabIndex={0}
               role="button"
             >
-              {isCommentsExpanded ? (
-                <MdChatBubble />
-              ) : (
-                <MdChatBubbleOutline />
-              )}
+              {isCommentsExpanded ? <MdChatBubble /> : <MdChatBubbleOutline />}
             </div>
           </div>
         </div>
