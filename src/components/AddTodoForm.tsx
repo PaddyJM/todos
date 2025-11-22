@@ -8,7 +8,6 @@ import useTodosStore from "../stores/todosStore";
 
 function AddTodoForm() {
   const [title, setTitle] = useState("");
-  const [status, setStatus] = useState("incomplete");
   const [showLoadingState, setShowLoadingState] = useState(false);
 
   const { addTodo, isInitialLoadComplete } = useTodosStore();
@@ -36,39 +35,27 @@ function AddTodoForm() {
       toast.error("Please enter a title");
       return;
     }
-    if (title && status) {
+    if (title) {
       addTodo({
         id: uuid(),
         title,
-        status,
+        status: "incomplete",
         time: new Date().toISOString(),
       });
       setTitle("");
-      setStatus("incomplete");
     }
   };
 
   return (
     <form className={styles.addTodoForm} onSubmit={handleSubmit}>
-      <div className={styles.addTodoInputs}>
-        <AutoResizeTextarea
-          className={styles.addTodoInput}
-          placeholder="Add a new todo..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onSubmit={() => handleSubmit()}
-          disabled={isDisabled}
-        />
-        <select
-          className={styles.addTodoSelect}
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          disabled={isDisabled}
-        >
-          <option value="incomplete">Incomplete</option>
-          <option value="complete">Completed</option>
-        </select>
-      </div>
+      <AutoResizeTextarea
+        className={styles.addTodoInput}
+        placeholder="Add a new todo..."
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onSubmit={() => handleSubmit()}
+        disabled={isDisabled}
+      />
       <Button type="submit" variant="primary" disabled={isDisabled}>
         Add Task
       </Button>
