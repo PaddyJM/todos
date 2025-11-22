@@ -243,3 +243,51 @@
   padding: 2rem;
   font-style: italic;
 }
+
+.todoEditForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+}
+
+.todoEditInputs {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.todoEditInput {
+  flex: 1;
+  min-width: 200px;
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--bg-2);
+  font-size: 1.4rem;
+  color: var(--black-2);
+  font-family: "Poppins", sans-serif;
+  &:focus {
+    outline: 2px solid var(--primaryPurple);
+  }
+}
+
+.todoEditSelect {
+  padding: 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: var(--bg-2);
+  font-size: 1.4rem;
+  color: var(--black-2);
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  &:focus {
+    outline: 2px solid var(--primaryPurple);
+  }
+}
+
+.todoEditButtons {
+  display: flex;
+  gap: 1rem;
+}

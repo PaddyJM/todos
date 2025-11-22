@@ -7,18 +7,20 @@ import {
 } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import Linkify from "linkify-react";
+import toast from "react-hot-toast";
 import styles from "../styles/modules/todoItem.module.scss";
 import { getClasses } from "../utils/getClasses";
 import { formatDate } from "../utils/formatDate";
 import CheckButton from "./CheckButton";
-import TodoModal from "./TodoModal";
 import Button from "./Button";
 import { Todo } from "../types";
 import useTodosStore from "../stores/todosStore";
 
 function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
-  const [updateModalOpen, setUpdateModalOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editingTitle, setEditingTitle] = useState("");
+  const [editingStatus, setEditingStatus] = useState("");
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(
@@ -50,7 +52,27 @@ function TodoItem({ todo }: { todo: Todo }) {
   };
 
   const handleUpdate = () => {
-    setUpdateModalOpen(true);
+    setIsEditing(true);
+    setEditingTitle(todo.title);
+    setEditingStatus(todo.status);
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingTitle.trim() === "") {
+      toast.error("Please enter a title");
+      return;
+    }
+    if (todo.title !== editingTitle || todo.status !== editingStatus) {
+      updateTodo({ ...todo, title: editingTitle, status: editingStatus });
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelTodoEdit = () => {
+    setIsEditing(false);
+    setEditingTitle("");
+    setEditingStatus("");
   };
 
   const handleToggleComments = () => {
@@ -100,54 +122,95 @@ function TodoItem({ todo }: { todo: Todo }) {
     <>
       <div className={styles.itemWrapper}>
         <div className={styles.item}>
-          <div className={styles.todoDetails}>
-            <CheckButton checked={checked} handleCheck={handleCheck} />
-            <div>
-              <p
-                className={getClasses([
-                  styles.todoText,
-                  todo.status === "complete" && styles["todoText--completed"],
-                ])}
-                style={{ wordBreak: "break-word" }}
-              >
-                <Linkify options={linkifyOptions}>{todo.title}</Linkify>
-              </p>
-              <p className={styles.time}>{formatDate(todo.time)}</p>
-            </div>
-          </div>
-          <div className={styles.todoActions}>
-            <div
-              className={styles.icon}
-              onClick={() => handleDelete()}
-              onKeyDown={() => handleDelete()}
-              tabIndex={0}
-              role="button"
-            >
-              <MdDelete />
-            </div>
-            <div
-              className={styles.icon}
-              onClick={() => handleUpdate()}
-              onKeyDown={() => handleUpdate()}
-              tabIndex={0}
-              role="button"
-            >
-              <MdEdit />
-            </div>
-            <div
-              className={getClasses([
-                styles.iconComments,
-                comments.length > 0 && styles.iconCommentsHighlighted,
-                isCommentsExpanded && styles.iconCommentsActive,
-              ])}
-              onClick={handleToggleComments}
-              onKeyDown={handleToggleComments}
-              tabIndex={0}
-              role="button"
-            >
-              {isCommentsExpanded ? <MdChatBubble /> : <MdChatBubbleOutline />}
-            </div>
-          </div>
+          {isEditing ? (
+            <form className={styles.todoEditForm} onSubmit={handleSaveEdit}>
+              <div className={styles.todoEditInputs}>
+                <input
+                  type="text"
+                  className={styles.todoEditInput}
+                  value={editingTitle}
+                  onChange={(e) => setEditingTitle(e.target.value)}
+                  autoFocus
+                />
+                <select
+                  className={styles.todoEditSelect}
+                  value={editingStatus}
+                  onChange={(e) => setEditingStatus(e.target.value)}
+                >
+                  <option value="incomplete">Incomplete</option>
+                  <option value="complete">Completed</option>
+                </select>
+              </div>
+              <div className={styles.todoEditButtons}>
+                <Button type="submit" variant="primary">
+                  Save
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={handleCancelTodoEdit}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <>
+              <div className={styles.todoDetails}>
+                <CheckButton checked={checked} handleCheck={handleCheck} />
+                <div>
+                  <p
+                    className={getClasses([
+                      styles.todoText,
+                      todo.status === "complete" &&
+                        styles["todoText--completed"],
+                    ])}
+                    style={{ wordBreak: "break-word" }}
+                  >
+                    <Linkify options={linkifyOptions}>{todo.title}</Linkify>
+                  </p>
+                  <p className={styles.time}>{formatDate(todo.time)}</p>
+                </div>
+              </div>
+              <div className={styles.todoActions}>
+                <div
+                  className={styles.icon}
+                  onClick={() => handleDelete()}
+                  onKeyDown={() => handleDelete()}
+                  tabIndex={0}
+                  role="button"
+                >
+                  <MdDelete />
+                </div>
+                <div
+                  className={styles.icon}
+                  onClick={() => handleUpdate()}
+                  onKeyDown={() => handleUpdate()}
+                  tabIndex={0}
+                  role="button"
+                >
+                  <MdEdit />
+                </div>
+                <div
+                  className={getClasses([
+                    styles.iconComments,
+                    comments.length > 0 && styles.iconCommentsHighlighted,
+                    isCommentsExpanded && styles.iconCommentsActive,
+                  ])}
+                  onClick={handleToggleComments}
+                  onKeyDown={handleToggleComments}
+                  tabIndex={0}
+                  role="button"
+                >
+                  {isCommentsExpanded ? (
+                    <MdChatBubble />
+                  ) : (
+                    <MdChatBubbleOutline />
+                  )}
+                </div>
+              </div>
+            </>
+          )}
         </div>
         <AnimatePresence>
           {isCommentsExpanded && (
@@ -250,12 +313,6 @@ function TodoItem({ todo }: { todo: Todo }) {
           )}
         </AnimatePresence>
       </div>
-      <TodoModal
-        type="update"
-        modalOpen={updateModalOpen}
-        setModalOpen={setUpdateModalOpen}
-        todo={todo}
-      />
     </>
   );
 }

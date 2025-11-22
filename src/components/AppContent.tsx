@@ -2,6 +2,7 @@ import { AnimatePresence, Reorder, motion } from "framer-motion";
 import useTodosStore from "../stores/todosStore";
 import styles from "../styles/modules/app.module.scss";
 import TodoItem from "./TodoItem";
+import AddTodoForm from "./AddTodoForm";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import client from "../http/Client";
@@ -68,51 +69,46 @@ function AppContent() {
     debouncedPutTodoList(todoList, toastId!);
   };
 
-  if (todoList && todoList.length === 0) {
-    return (
-      <>
-        <br />
-        <motion.p variants={child} className={styles.emptyText}>
-          There are no todos; please add some
-        </motion.p>
-      </>
-    );
-  }
-
-  if (!todoList) {
-    return (
-      <>
-        <br />
-        <motion.p variants={child} className={styles.emptyText}>
-          Loading...
-        </motion.p>
-      </>
-    );
-  }
-
   return (
-    <motion.div
-      className={styles.content__wrapper}
-      variants={container}
-      initial="hidden"
-      animate="visible"
-    >
-      <AnimatePresence>
-        {todoList && todoList.length > 0 ? (
-          <Reorder.Group axis="y" values={todoList} onReorder={saveTodoList}>
-            {todoList.map((todo) => (
-              <Reorder.Item key={todo.id} value={todo}>
-                <TodoItem key={todo.id} todo={todo} />
-              </Reorder.Item>
-            ))}
-          </Reorder.Group>
-        ) : (
+    <>
+      <AddTodoForm />
+      {todoList && todoList.length === 0 && (
+        <>
+          <br />
           <motion.p variants={child} className={styles.emptyText}>
-            No Todos
+            There are no todos; please add some
           </motion.p>
-        )}
-      </AnimatePresence>
-    </motion.div>
+        </>
+      )}
+
+      {!todoList && (
+        <>
+          <br />
+          <motion.p variants={child} className={styles.emptyText}>
+            Loading...
+          </motion.p>
+        </>
+      )}
+
+      {todoList && todoList.length > 0 && (
+        <motion.div
+          className={styles.content__wrapper}
+          variants={container}
+          initial="hidden"
+          animate="visible"
+        >
+          <AnimatePresence>
+            <Reorder.Group axis="y" values={todoList} onReorder={saveTodoList}>
+              {todoList.map((todo) => (
+                <Reorder.Item key={todo.id} value={todo}>
+                  <TodoItem key={todo.id} todo={todo} />
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          </AnimatePresence>
+        </motion.div>
+      )}
+    </>
   );
 }
 
