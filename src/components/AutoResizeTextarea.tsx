@@ -6,7 +6,7 @@ interface AutoResizeTextareaProps {
   placeholder?: string;
   className?: string;
   autoFocus?: boolean;
-  onKeyDown?: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+  onSubmit?: () => void;
 }
 
 function AutoResizeTextarea({
@@ -15,7 +15,7 @@ function AutoResizeTextarea({
   placeholder,
   className,
   autoFocus,
-  onKeyDown,
+  onSubmit,
 }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -23,6 +23,15 @@ function AutoResizeTextarea({
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (onSubmit) {
+        onSubmit();
+      }
     }
   };
 
@@ -38,7 +47,7 @@ function AutoResizeTextarea({
       value={value}
       onChange={onChange}
       onInput={handleInput}
-      onKeyDown={onKeyDown}
+      onKeyDown={handleKeyDown}
       autoFocus={autoFocus}
       rows={1}
     />

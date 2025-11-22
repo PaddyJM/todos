@@ -58,8 +58,10 @@ function TodoItem({ todo }: { todo: Todo }) {
     setEditingStatus(todo.status);
   };
 
-  const handleSaveEdit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSaveEdit = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (editingTitle.trim() === "") {
       toast.error("Please enter a title");
       return;
@@ -80,8 +82,10 @@ function TodoItem({ todo }: { todo: Todo }) {
     setIsCommentsExpanded(!isCommentsExpanded);
   };
 
-  const handleAddComment = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleAddComment = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (commentText.trim()) {
       addComment(todo.id, commentText);
       setCommentText("");
@@ -93,8 +97,10 @@ function TodoItem({ todo }: { todo: Todo }) {
     setEditingCommentText(comments[index].comment);
   };
 
-  const handleUpdateComment = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdateComment = (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (editingCommentIndex !== null && editingCommentText.trim()) {
       updateComment(todo.id, editingCommentIndex, editingCommentText);
       setEditingCommentIndex(null);
@@ -131,6 +137,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                   value={editingTitle}
                   onChange={(e) => setEditingTitle(e.target.value)}
                   autoFocus
+                  onSubmit={() => handleSaveEdit()}
                 />
                 <select
                   className={styles.todoEditSelect}
@@ -230,6 +237,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                   placeholder="Add a comment..."
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
+                  onSubmit={() => handleAddComment()}
                 />
                 <div className={styles.commentButton}>
                   <Button type="submit" variant="primary">
@@ -253,6 +261,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                               setEditingCommentText(e.target.value)
                             }
                             autoFocus
+                            onSubmit={() => handleUpdateComment()}
                           />
                           <div className={styles.commentEditButtons}>
                             <Button type="submit" variant="primary">

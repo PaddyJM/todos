@@ -12,8 +12,10 @@ function AddTodoForm() {
 
   const { addTodo } = useTodosStore();
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e?: React.FormEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
     if (title === "") {
       toast.error("Please enter a title");
       return;
@@ -38,6 +40,7 @@ function AddTodoForm() {
           placeholder="Add a new todo..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
+          onSubmit={() => handleSubmit()}
         />
         <select
           className={styles.addTodoSelect}
