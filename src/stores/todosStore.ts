@@ -9,31 +9,34 @@ type TodosStore = {
   filterStatus: string;
   setFilterStatus: (filterStatus: string) => void;
   todoList: Todo[] | null;
-  addTodo: (todo: Todo) => void;
-  updateTodo: (todo: Todo) => void;
-  deleteTodo: (id: string) => void;
+  addTodo: (todo: Todo) => Promise<void>;
+  updateTodo: (todo: Todo) => Promise<void>;
+  deleteTodo: (id: string) => Promise<void>;
   setTodos: (todoList: Todo[]) => void;
-  getInitialTodoList: () => void;
-  addComment: (todoId: string, comment: string) => void;
+  getInitialTodoList: () => Promise<void>;
+  addComment: (todoId: string, comment: string) => Promise<void>;
   updateComment: (
     todoId: string,
     commentIndex: number,
     newComment: string
-  ) => void;
-  deleteComment: (todoId: string, commentIndex: number) => void;
+  ) => Promise<void>;
+  deleteComment: (todoId: string, commentIndex: number) => Promise<void>;
 };
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
     filterStatus: "all",
     setFilterStatus: (filterStatus: string) => set(() => ({ filterStatus })),
     todoList: null,
+
     getInitialTodoList: async () => {
       const response = await client.getTodoList();
       const todoList = response.data.todoList;
+
       if (!todoList) {
         set(() => ({ todoList: null }));
         return;
       }
+
       if (todoList && todoList.length > 0) {
         set(() => ({ todoList: response.data.todoList }));
         window.localStorage.setItem("todoList", JSON.stringify(todoList));
@@ -42,12 +45,15 @@ const useTodosStore = create<TodosStore>(
         window.localStorage.setItem("todoList", JSON.stringify([]));
       }
     },
+
     addTodo: async (todo: Todo) => {
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
       }
+
       const todoListString = window.localStorage.getItem("todoList");
+
       let todoListArr: Todo[] = [];
       try {
         todoListArr = JSON.parse(todoListString ?? "{}") as Todo[];
@@ -74,7 +80,9 @@ const useTodosStore = create<TodosStore>(
       if (userId === "") {
         throw new Error("User id not found");
       }
+
       const todoList = window.localStorage.getItem("todoList");
+
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
         todoListArr.forEach((todo: Todo) => {
@@ -84,22 +92,28 @@ const useTodosStore = create<TodosStore>(
             todo.comments = updatedTodo.comments;
           }
         });
+
         window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+
         set((state: any) => ({
           todoList: state.todoList.map((todo: Todo) => {
             return todo.id === updatedTodo.id ? updatedTodo : todo;
           }),
         }));
+
         const response = await client.putTodoList(todoListArr);
         if (response) toast.success("Task Updated successfully");
       }
     },
     addComment: async (todoId: string, comment: string) => {
+
       const userId = useUserStore.getState().user.sub ?? "";
       if (userId === "") {
         throw new Error("User id not found");
       }
+
       const todoList = window.localStorage.getItem("todoList");
+
       if (todoList) {
         const todoListArr = JSON.parse(todoList);
         const newComment: TodoComment = {
@@ -198,7 +212,9 @@ const useTodosStore = create<TodosStore>(
       if (userId === "") {
         throw new Error("User id not found");
       }
+
       set(() => ({ todoList }));
+      
       window.localStorage.setItem("todoList", JSON.stringify(todoList));
     },
   }))
