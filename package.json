@@ -24,7 +24,8 @@
   },
   "scripts": {
     "postinstall": "cd ./infrastructure && npm install",
-    "dev": "env-cmd -f .env.dev react-scripts start",
+    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:api\" \"npm run dev:db\"",
+    "dev:ui": "env-cmd -f .env.dev react-scripts start",
     "dev:db": "cd infrastructure/ && docker compose up -d && scripts/create-table.sh",
     "dev:api": "npm run dev:db && cd infrastructure/ && env-cmd -f ../.env.dev bash -c 'ENV=dev npx cdk synth && sam local start-api -p $LOCAL_API_PORT -t ./cdk.out/TodosStack-dev.template.json --docker-network todos --warm-containers EAGER --skip-pull-image' && cd ../",
     "build": "react-scripts build",
@@ -71,6 +72,7 @@
     "@types/react-dom": "^18.2.21",
     "@types/uuid": "^9.0.8",
     "babel-jest": "^29.7.0",
+    "concurrently": "^9.2.1",
     "env-cmd": "^10.1.0",
     "eslint": "^8.57.0",
     "jest": "^27.5.1",
