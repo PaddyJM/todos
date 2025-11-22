@@ -3,6 +3,7 @@ import { v4 as uuid } from "uuid";
 import toast from "react-hot-toast";
 import styles from "../styles/modules/app.module.scss";
 import Button from "./Button";
+import AutoResizeTextarea from "./AutoResizeTextarea";
 import useTodosStore from "../stores/todosStore";
 
 function AddTodoForm() {
@@ -26,27 +27,17 @@ function AddTodoForm() {
       });
       setTitle("");
       setStatus("incomplete");
-      const textarea = e.currentTarget.querySelector('textarea');
-      if (textarea) {
-        textarea.style.height = 'auto';
-      }
     }
   };
 
   return (
     <form className={styles.addTodoForm} onSubmit={handleSubmit}>
       <div className={styles.addTodoInputs}>
-        <textarea
+        <AutoResizeTextarea
           className={styles.addTodoInput}
           placeholder="Add a new todo..."
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          rows={1}
-          onInput={(e) => {
-            const target = e.target as HTMLTextAreaElement;
-            target.style.height = 'auto';
-            target.style.height = target.scrollHeight + 'px';
-          }}
         />
         <select
           className={styles.addTodoSelect}
