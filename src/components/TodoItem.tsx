@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import {
   MdDelete,
   MdEdit,
-  MdKeyboardArrowDown,
-  MdKeyboardArrowUp,
+  MdChatBubble,
+  MdChatBubbleOutline,
 } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import Linkify from "linkify-react";
@@ -114,9 +114,9 @@ function TodoItem({ todo }: { todo: Todo }) {
               role="button"
             >
               {isCommentsExpanded ? (
-                <MdKeyboardArrowUp />
+                <MdChatBubble />
               ) : (
-                <MdKeyboardArrowDown />
+                <MdChatBubbleOutline />
               )}
             </div>
           </div>
