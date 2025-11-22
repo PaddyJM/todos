@@ -83,9 +83,58 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: 0.3s ease background-color;
+  transition:
+    0.3s ease background-color,
+    0.3s ease color;
   &:hover {
     background-color: var(--gray-2);
+  }
+}
+
+.iconHighlighted {
+  background-color: var(--gray-2);
+  color: var(--primaryPurple);
+}
+
+.iconActive {
+  background-color: var(--primaryPurple);
+  color: var(--white);
+  &:hover {
+    background-color: var(--primaryPurple);
+  }
+}
+
+.iconComments {
+  font-size: 2rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: var(--gray-1);
+  color: var(--black-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition:
+    0.3s ease background-color,
+    0.3s ease color;
+  &:hover {
+    background-color: var(--gray-2);
+  }
+}
+
+.iconCommentsHighlighted {
+  background-color: var(--primaryPurple);
+  color: var(--white);
+  &:hover {
+    background-color: var(--primaryPurple);
+  }
+}
+
+.iconCommentsActive {
+  background-color: var(--primaryPurple);
+  color: var(--white);
+  &:hover {
+    background-color: var(--primaryPurple);
   }
 }
 

@@ -135,7 +135,11 @@ function TodoItem({ todo }: { todo: Todo }) {
               <MdEdit />
             </div>
             <div
-              className={styles.icon}
+              className={getClasses([
+                styles.iconComments,
+                comments.length > 0 && styles.iconCommentsHighlighted,
+                isCommentsExpanded && styles.iconCommentsActive,
+              ])}
               onClick={handleToggleComments}
               onKeyDown={handleToggleComments}
               tabIndex={0}
