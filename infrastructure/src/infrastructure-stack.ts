@@ -125,11 +125,11 @@ export class InfrastructureStack extends cdk.Stack {
       });
     }
 
-    const table = new cdk.aws_dynamodb.Table(this, `TodosTable-${env}`, {
-      partitionKey: { name: "id", type: cdk.aws_dynamodb.AttributeType.STRING },
-      tableName: `TodosTable-${env}`,
-      removalPolicy: cdk.RemovalPolicy.RETAIN,
-    });
+    const table = cdk.aws_dynamodb.Table.fromTableName(
+      this,
+      `TodosTable-${env}`,
+      `TodosTable-${env}`
+    );
 
     const lambda = new NodejsFunction(this, `TodosFunction-${env}`, {
       runtime: cdk.aws_lambda.Runtime.NODEJS_20_X,
