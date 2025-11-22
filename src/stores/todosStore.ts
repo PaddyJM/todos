@@ -15,6 +15,12 @@ type TodosStore = {
   setTodos: (todoList: Todo[]) => void;
   getInitialTodoList: () => void;
   addComment: (todoId: string, comment: string) => void;
+  updateComment: (
+    todoId: string,
+    commentIndex: number,
+    newComment: string
+  ) => void;
+  deleteComment: (todoId: string, commentIndex: number) => void;
 };
 const useTodosStore = create<TodosStore>(
   zukeeper((set: any) => ({
@@ -112,6 +118,56 @@ const useTodosStore = create<TodosStore>(
         }));
         const response = await client.putTodoList(todoListArr);
         if (response) toast.success("Comment added successfully");
+      }
+    },
+    updateComment: async (
+      todoId: string,
+      commentIndex: number,
+      newComment: string
+    ) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
+      const todoList = window.localStorage.getItem("todoList");
+      if (todoList) {
+        const todoListArr = JSON.parse(todoList);
+        todoListArr.forEach((todo: Todo) => {
+          if (
+            todo.id === todoId &&
+            todo.comments &&
+            todo.comments[commentIndex]
+          ) {
+            todo.comments[commentIndex].comment = newComment;
+          }
+        });
+        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        set(() => ({
+          todoList: todoListArr,
+        }));
+        const response = await client.putTodoList(todoListArr);
+        if (response) toast.success("Comment updated successfully");
+      }
+    },
+    deleteComment: async (todoId: string, commentIndex: number) => {
+      const userId = useUserStore.getState().user.sub ?? "";
+      if (userId === "") {
+        throw new Error("User id not found");
+      }
+      const todoList = window.localStorage.getItem("todoList");
+      if (todoList) {
+        const todoListArr = JSON.parse(todoList);
+        todoListArr.forEach((todo: Todo) => {
+          if (todo.id === todoId && todo.comments) {
+            todo.comments.splice(commentIndex, 1);
+          }
+        });
+        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        set(() => ({
+          todoList: todoListArr,
+        }));
+        const response = await client.putTodoList(todoListArr);
+        if (response) toast.success("Comment deleted successfully");
       }
     },
     deleteTodo: async (id: string) => {

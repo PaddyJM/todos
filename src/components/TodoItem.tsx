@@ -21,6 +21,10 @@ function TodoItem({ todo }: { todo: Todo }) {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(
+    null
+  );
+  const [editingCommentText, setEditingCommentText] = useState("");
 
   useEffect(() => {
     if (todo.status === "complete") {
@@ -30,7 +34,8 @@ function TodoItem({ todo }: { todo: Todo }) {
     }
   }, [todo.status]);
 
-  const { updateTodo, deleteTodo, addComment } = useTodosStore();
+  const { updateTodo, deleteTodo, addComment, updateComment, deleteComment } =
+    useTodosStore();
 
   const handleCheck = () => {
     setChecked(!checked);
@@ -58,6 +63,29 @@ function TodoItem({ todo }: { todo: Todo }) {
       addComment(todo.id, commentText);
       setCommentText("");
     }
+  };
+
+  const handleEditComment = (index: number) => {
+    setEditingCommentIndex(index);
+    setEditingCommentText(comments[index].comment);
+  };
+
+  const handleUpdateComment = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingCommentIndex !== null && editingCommentText.trim()) {
+      updateComment(todo.id, editingCommentIndex, editingCommentText);
+      setEditingCommentIndex(null);
+      setEditingCommentText("");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentIndex(null);
+    setEditingCommentText("");
+  };
+
+  const handleDeleteComment = (index: number) => {
+    deleteComment(todo.id, index);
   };
 
   const comments = todo.comments || [];
@@ -147,14 +175,67 @@ function TodoItem({ todo }: { todo: Todo }) {
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (
                     <div key={index} className={styles.commentItem}>
-                      <p className={styles.commentText}>
-                        <Linkify options={linkifyOptions}>
-                          {comment.comment}
-                        </Linkify>
-                      </p>
-                      <p className={styles.commentTime}>
-                        {formatDate(comment.time)}
-                      </p>
+                      {editingCommentIndex === index ? (
+                        <form
+                          className={styles.commentEditForm}
+                          onSubmit={handleUpdateComment}
+                        >
+                          <input
+                            type="text"
+                            className={styles.commentInput}
+                            value={editingCommentText}
+                            onChange={(e) =>
+                              setEditingCommentText(e.target.value)
+                            }
+                            autoFocus
+                          />
+                          <div className={styles.commentEditButtons}>
+                            <Button type="submit" variant="primary">
+                              Save
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="secondary"
+                              onClick={handleCancelEdit}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </form>
+                      ) : (
+                        <>
+                          <div className={styles.commentContent}>
+                            <p className={styles.commentText}>
+                              <Linkify options={linkifyOptions}>
+                                {comment.comment}
+                              </Linkify>
+                            </p>
+                            <p className={styles.commentTime}>
+                              {formatDate(comment.time)}
+                            </p>
+                          </div>
+                          <div className={styles.commentActions}>
+                            <div
+                              className={styles.icon}
+                              onClick={() => handleDeleteComment(index)}
+                              onKeyDown={() => handleDeleteComment(index)}
+                              tabIndex={0}
+                              role="button"
+                            >
+                              <MdDelete />
+                            </div>
+                            <div
+                              className={styles.icon}
+                              onClick={() => handleEditComment(index)}
+                              onKeyDown={() => handleEditComment(index)}
+                              tabIndex={0}
+                              role="button"
+                            >
+                              <MdEdit />
+                            </div>
+                          </div>
+                        </>
+                      )}
                     </div>
                   ))
                 ) : (
