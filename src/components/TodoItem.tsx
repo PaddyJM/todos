@@ -21,7 +21,6 @@ function TodoItem({ todo }: { todo: Todo }) {
   const [checked, setChecked] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingTitle, setEditingTitle] = useState("");
-  const [editingStatus, setEditingStatus] = useState("");
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(
@@ -55,7 +54,6 @@ function TodoItem({ todo }: { todo: Todo }) {
   const handleUpdate = () => {
     setIsEditing(true);
     setEditingTitle(todo.title);
-    setEditingStatus(todo.status);
   };
 
   const handleSaveEdit = (e?: React.FormEvent) => {
@@ -66,8 +64,8 @@ function TodoItem({ todo }: { todo: Todo }) {
       toast.error("Please enter a title");
       return;
     }
-    if (todo.title !== editingTitle || todo.status !== editingStatus) {
-      updateTodo({ ...todo, title: editingTitle, status: editingStatus });
+    if (todo.title !== editingTitle) {
+      updateTodo({ ...todo, title: editingTitle });
     }
     setIsEditing(false);
   };
@@ -75,7 +73,6 @@ function TodoItem({ todo }: { todo: Todo }) {
   const handleCancelTodoEdit = () => {
     setIsEditing(false);
     setEditingTitle("");
-    setEditingStatus("");
   };
 
   const handleToggleComments = () => {
@@ -139,14 +136,6 @@ function TodoItem({ todo }: { todo: Todo }) {
                   autoFocus
                   onSubmit={() => handleSaveEdit()}
                 />
-                <select
-                  className={styles.todoEditSelect}
-                  value={editingStatus}
-                  onChange={(e) => setEditingStatus(e.target.value)}
-                >
-                  <option value="incomplete">Incomplete</option>
-                  <option value="complete">Completed</option>
-                </select>
               </div>
               <div className={styles.todoEditButtons}>
                 <Button type="submit" variant="primary">
@@ -170,7 +159,7 @@ function TodoItem({ todo }: { todo: Todo }) {
                     className={getClasses([
                       styles.todoText,
                       todo.status === "complete" &&
-                        styles["todoText--completed"],
+                      styles["todoText--completed"],
                     ])}
                     style={{ wordBreak: "break-word" }}
                   >
