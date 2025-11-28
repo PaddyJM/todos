@@ -15,6 +15,8 @@ function App() {
             redirect_uri: window.location.origin,
             audience: process.env.REACT_APP_AUTH0_AUDIENCE,
           }}
+          useRefreshTokens={true}
+          cacheLocation="localstorage"
         >
           <div className="container">
             <div className={styles.app__wrapper}>
