@@ -4,6 +4,7 @@ import {
   MdEdit,
   MdChatBubble,
   MdChatBubbleOutline,
+  MdAdd,
 } from "react-icons/md";
 import { AnimatePresence, motion } from "framer-motion";
 import Linkify from "linkify-react";
@@ -23,6 +24,7 @@ function TodoItem({ todo }: { todo: Todo }) {
   const [editingTitle, setEditingTitle] = useState("");
   const [isCommentsExpanded, setIsCommentsExpanded] = useState(false);
   const [commentText, setCommentText] = useState("");
+  const [isCommentFocused, setIsCommentFocused] = useState(false);
   const [editingCommentIndex, setEditingCommentIndex] = useState<number | null>(
     null
   );
@@ -227,6 +229,8 @@ function TodoItem({ todo }: { todo: Todo }) {
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
                   onSubmit={() => handleAddComment()}
+                  onFocus={() => setIsCommentFocused(true)}
+                  onBlur={() => setIsCommentFocused(false)}
                 />
                 <div className={styles.commentButton}>
                   <Button type="submit" variant="primary">
@@ -234,6 +238,16 @@ function TodoItem({ todo }: { todo: Todo }) {
                   </Button>
                 </div>
               </form>
+              {isCommentFocused && (
+                <div
+                  className={styles.mobileCommentButton}
+                  onClick={() => handleAddComment()}
+                  role="button"
+                  tabIndex={0}
+                >
+                  <MdAdd />
+                </div>
+              )}
               <div className={styles.commentsList}>
                 {comments.length > 0 ? (
                   comments.map((comment, index) => (

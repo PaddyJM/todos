@@ -8,6 +8,8 @@ interface AutoResizeTextareaProps {
   autoFocus?: boolean;
   onSubmit?: () => void;
   disabled?: boolean;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 function AutoResizeTextarea({
@@ -18,6 +20,8 @@ function AutoResizeTextarea({
   autoFocus,
   onSubmit,
   disabled,
+  onFocus,
+  onBlur,
 }: AutoResizeTextareaProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isMobile, setIsMobile] = useState(false);
@@ -64,6 +68,8 @@ function AutoResizeTextarea({
       onChange={onChange}
       onInput={handleInput}
       onKeyDown={handleKeyDown}
+      onFocus={onFocus}
+      onBlur={onBlur}
       autoFocus={autoFocus}
       disabled={disabled}
       rows={1}
